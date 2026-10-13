@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>Bennes Maupu — Configurateur Commercial</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2b2f36">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Configurateur">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --rouge:#C8102E;
+    --rouge-fonce:#9c0c22;
+    --rouge-pale:#fdecef;
+    --acier:#2b2f36;
+    --acier-fonce:#1a1c20;
+    --acier-clair:#4a5058;
+    --gris-fond:#f1f2f4;
+    --gris-bordure:#e0e3e8;
+    --gris-texte:#6b7078;
+    --blanc:#ffffff;
+    --vert:#1f9d55;
+    --vert-pale:#e8f6ee;
+    --radius:16px;
+    --ombre:0 1px 2px rgba(20,22,26,.05),0 6px 20px -4px rgba(20,22,26,.08);
+    --ombre-haute:0 2px 4px rgba(20,22,26,.06),0 18px 40px -8px rgba(20,22,26,.18);
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    font-family:'Barlow',sans-serif;
+    background:var(--gris-fond);
+    color:var(--acier);
+    position:relative;
+    min-height:100vh;
+    padding-bottom:104px;
+  }
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:
+      radial-gradient(circle at 100% 0%, rgba(200,16,46,.07) 0, transparent 38%),
+      repeating-linear-gradient(45deg, rgba(43,47,54,.028) 0 2px, transparent 2px 38px);
+    pointer-events:none;z-index:0;
+  }
+  h1,h2,h3,.titre-condensed{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.3px;}
+
+  /* ---------- En-tête ---------- */
+  header.app-header{
+    background:linear-gradient(120deg,var(--acier) 0%,var(--acier-fonce) 100%);
+    color:#fff;padding:14px 20px;
+    display:flex;align-items:center;justify-content:space-between;
+    position:sticky;top:0;z-index:20;
+    box-shadow:0 4px 16px rgba(0,0,0,.22);
+  }
+  header.app-header::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:3px;
+    background:linear-gradient(90deg,var(--rouge) 0,var(--rouge) 35%,transparent 100%);
+  }
+  .brand{display:flex;align-items:center;gap:12px;}
+  .brand-mark{
+    width:42px;height:42px;border-radius:10px;
+    background:linear-gradient(145deg,#e0173a,var(--rouge-fonce));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:19px;letter-spacing:.5px;
+    box-shadow:0 3px 0 #6e0817, 0 6px 12px rgba(0,0,0,.3);
+  }
+  .brand-text h1{margin:0;font-size:20px;color:#fff;line-height:1.05;}
+  .brand-text span{font-size:12px;color:#aeb2b9;letter-spacing:.6px;text-transform:uppercase;}
+  .header-right{display:flex;align-items:center;gap:14px;font-size:13px;color:#d7d9dd;}
+  .header-right button{
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.28);color:#fff;
+    padding:8px 14px;border-radius:9px;font-family:inherit;font-weight:600;font-size:13px;cursor:pointer;
+    transition:.15s;
+  }
+  .header-right button:hover{background:rgba(255,255,255,.16);}
+  .header-right button:active{transform:scale(.97);}
+  .header-right button{white-space:nowrap;}
+  @media(max-width:560px){
+    header.app-header{padding:12px 14px;}
+    .header-right #userLabel{display:none;}
+    .brand-text h1{font-size:17px;}
+    .brand-mark{width:38px;height:38px;font-size:17px;}
+  }
+
+  /* ---------- Stepper ---------- */
+  .steps{
+    display:flex;align-items:flex-start;padding:20px 20px 4px;max-width:900px;margin:0 auto;position:relative;z-index:1;
+  }
+  .step-pill{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:600;color:#9a9ea5;position:relative;text-align:center;
+  }
+  .step-pill::before{
+    content:attr(data-n);
+    width:32px;height:32px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+    background:#fff;border:2px solid var(--gris-bordure);color:#9a9ea5;
+    font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;
+    position:relative;z-index:2;transition:.25s;
+  }
+  .step-pill::after{
+    content:"";position:absolute;top:15px;left:calc(50% + 20px);right:calc(-50% + 20px);
+    height:2px;background:var(--gris-bordure);z-index:1;transition:.25s;
+  }
+  .step-pill:last-child::after{display:none;}
+  .step-pill.active{color:var(--rouge);}
+  .step-pill.active::before{background:var(--rouge);border-color:var(--rouge);color:#fff;box-shadow:0 0 0 5px rgba(200,16,46,.14);}
+  .step-pill.done{color:var(--vert);}
+  .step-pill.done::before{content:"✓";background:var(--vert);border-color:var(--vert);color:#fff;}
+  .step-pill.done::after{background:var(--vert);}
+
+  main{max-width:900px;margin:0 auto;padding:18px 20px 40px;position:relative;z-index:1;}
+  section.step-view{animation:entree .28s ease both;}
+  @keyframes entree{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
+
+  .card{
+    background:#fff;border:1px solid var(--gris-bordure);border-radius:var(--radius);
+    padding:20px;margin-bottom:16px;box-shadow:var(--ombre);
+  }
+  .card h3{margin:0 0 12px;font-size:21px;}
+  .card h3::before{content:"";display:inline-block;width:4px;height:17px;background:var(--rouge);border-radius:2px;margin-right:9px;vertical-align:-2px;}
+
+  /* ---------- Étape 1 : modèles ---------- */
+  .famille-title{
+    font-size:23px;margin:28px 0 12px;color:var(--acier);
+    display:flex;align-items:center;gap:12px;
+  }
+  .famille-title::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gris-bordure),transparent);}
+  .famille-title:first-child{margin-top:6px;}
+  .modeles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;}
+  .modele-card{
+    position:relative;border:2px solid transparent;border-radius:var(--radius);padding:20px 18px 16px;cursor:pointer;
+    transition:transform .18s,box-shadow .18s,border-color .18s;background:#fff;
+    box-shadow:var(--ombre);overflow:hidden;border-color:#eceef1;
+  }
+  .modele-card::before{
+    content:"";position:absolute;left:0;top:0;right:0;height:4px;
+    background:linear-gradient(90deg,var(--acier),var(--acier-clair));transition:.2s;
+  }
+  .modele-card:hover{transform:translateY(-3px);box-shadow:var(--ombre-haute);}
+  .modele-card:hover::before{background:var(--rouge);}
+  .modele-card:active{transform:translateY(-1px) scale(.99);}
+  .modele-card.selected{border-color:var(--rouge);}
+  .modele-card.selected::before{background:var(--rouge);}
+  .modele-card.selected::after{
+    content:"✓";position:absolute;top:14px;right:14px;width:24px;height:24px;border-radius:50%;
+    background:var(--rouge);color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;
+  }
+  .modele-card h3{margin:2px 0 6px;font-size:23px;}
+  .modele-card p{margin:0 0 16px;font-size:13.5px;color:var(--gris-texte);line-height:1.45;min-height:39px;}
+  .modele-card .prix-label{font-size:11px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#9a9ea5;}
+  .modele-card .base-price{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--rouge);font-size:28px;line-height:1.1;}
+  .modele-card .prix-label{margin-top:2px;}
+  .modele-card .base-price small{font-family:'Barlow',sans-serif;font-size:12px;font-weight:600;color:var(--gris-texte);margin-left:4px;}
+
+  /* ---------- Étape 2 : options ---------- */
+  .modele-recap{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+  .modele-recap .tag{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:var(--rouge);}
+  .modele-recap h3{margin:2px 0 3px;font-size:26px;}
+  .modele-recap h3::before{display:none;}
+  .modele-recap .meta{font-size:13px;color:var(--gris-texte);}
+  /* Catégories : tuiles qui ouvrent une fenêtre dédiée */
+  .cat-block{
+    background:#fff;border:1px solid #eceef1;border-radius:var(--radius);margin-bottom:12px;overflow:hidden;
+    box-shadow:var(--ombre);transition:transform .15s,box-shadow .2s,border-color .2s;
+  }
+  .cat-block:hover{box-shadow:var(--ombre-haute);border-color:#dfe2e7;}
+  .cat-block:active{transform:scale(.992);}
+  .cat-head{
+    display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer;user-select:none;position:relative;
+  }
+  .cat-head::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 3px 3px 0;background:var(--gris-bordure);transition:.2s;}
+  .cat-block.has .cat-head::before{background:var(--rouge);}
+  .cat-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+  .cat-title{display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:21px;line-height:1.1;}
+  .cat-sum{font-size:13px;color:var(--gris-texte);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .cat-side{display:flex;align-items:center;gap:12px;flex:none;}
+  .cat-price{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;color:var(--rouge);white-space:nowrap;}
+  .cat-count{
+    display:none;min-width:22px;height:22px;padding:0 7px;border-radius:11px;background:var(--rouge);color:#fff;
+    font-family:'Barlow',sans-serif;font-size:12px;font-weight:700;align-items:center;justify-content:center;
+  }
+  .cat-count.visible{display:inline-flex;}
+  .cat-head .chevron{width:30px;height:30px;border-radius:50%;background:var(--gris-fond);color:var(--acier-clair);font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;transition:.2s;}
+  .cat-block:hover .chevron{background:var(--rouge);color:#fff;transform:translateX(2px);}
+
+  .opt-sheet{position:fixed;inset:0;z-index:60;background:var(--gris-fond);display:flex;flex-direction:column;animation:sheetIn .26s cubic-bezier(.2,.8,.2,1) both;}
+  .opt-sheet[hidden]{display:none;}
+  @keyframes sheetIn{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:none;}}
+  .sheet-bar{
+    background:linear-gradient(120deg,var(--acier) 0%,var(--acier-fonce) 100%);color:#fff;position:relative;
+    padding:12px 16px;display:flex;align-items:center;gap:14px;box-shadow:0 4px 16px rgba(0,0,0,.22);
+  }
+  .sheet-bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--rouge) 0,var(--rouge) 35%,transparent 100%);}
+  .sheet-back{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:10px;padding:9px 14px;font:600 14px 'Barlow',sans-serif;cursor:pointer;white-space:nowrap;}
+  .sheet-back:hover{background:rgba(255,255,255,.18);}
+  .sheet-ttl{min-width:0;}
+  .sheet-ttl small{display:block;font-size:11px;letter-spacing:.9px;text-transform:uppercase;color:#aeb2b9;font-weight:600;}
+  .sheet-ttl h2{margin:0;font-size:24px;line-height:1.1;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sheet-body{flex:1;overflow:auto;padding:18px 20px 24px;-webkit-overflow-scrolling:touch;}
+  .sheet-inner{max-width:760px;margin:0 auto;}
+  .sheet-opts{background:#fff;border:1px solid #eceef1;border-radius:var(--radius);box-shadow:var(--ombre);overflow:hidden;}
+  .sheet-foot{
+    background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--gris-bordure);
+    padding:12px 20px calc(12px + env(safe-area-inset-bottom));box-shadow:0 -6px 20px rgba(0,0,0,.07);
+  }
+  .sheet-foot-in{max-width:760px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .sheet-total{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;color:var(--rouge);line-height:1.05;}
+  @media(max-width:560px){.sheet-body{padding:14px 12px 20px;}.cat-head{padding:15px 14px;}.cat-price{font-size:16px;}}
+  label.opt-row{
+    display:flex;justify-content:space-between;align-items:center;gap:14px;
+    padding:14px 18px;border-top:1px solid #eef0f3;cursor:pointer;min-height:56px;transition:background .15s;
+  }
+  label.opt-row:first-child{border-top:none;}
+  label.opt-row:hover{background:#fafafb;}
+  label.opt-row.on{background:var(--rouge-pale);}
+  .opt-left{display:flex;gap:14px;align-items:center;flex:1;}
+  .opt-left input{position:absolute;opacity:0;pointer-events:none;}
+  .opt-ctrl{
+    flex:none;width:24px;height:24px;border:2px solid #c3c7ce;background:#fff;
+    display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .opt-ctrl.radio{border-radius:50%;}
+  .opt-ctrl.check{border-radius:7px;}
+  .opt-ctrl::after{content:"";transition:.15s;}
+  .opt-ctrl.radio::after{width:10px;height:10px;border-radius:50%;background:#fff;transform:scale(0);}
+  .opt-ctrl.check::after{width:6px;height:11px;border:solid #fff;border-width:0 3px 3px 0;transform:rotate(45deg) scale(0);margin-top:-2px;}
+  label.opt-row.on .opt-ctrl{background:var(--rouge);border-color:var(--rouge);}
+  label.opt-row.on .opt-ctrl.radio::after{transform:scale(1);}
+  label.opt-row.on .opt-ctrl.check::after{transform:rotate(45deg) scale(1);}
+  .opt-photo{position:relative;flex:none;width:72px;height:72px;border-radius:12px;overflow:hidden;border:1px solid var(--gris-bordure);background:#eef0f3;cursor:zoom-in;padding:0;display:block;}
+  .opt-photo img{width:100%;height:100%;object-fit:cover;display:block;}
+  .opt-photo::after{content:"⤢";position:absolute;right:4px;bottom:4px;width:20px;height:20px;border-radius:50%;background:rgba(20,22,26,.62);color:#fff;font-size:12px;display:flex;align-items:center;justify-content:center;}
+  label.opt-row.off .opt-photo{opacity:.45;}
+  .opt-video{flex:none;width:38px;height:38px;border-radius:50%;border:1px solid var(--gris-bordure);background:#fff;color:var(--acier-clair);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-right:2px;transition:.15s;}
+  .opt-video:hover{background:var(--rouge);border-color:var(--rouge);color:#fff;}
+  label.opt-row.off .opt-video{opacity:.45;}
+  .photo-box{position:fixed;inset:0;z-index:90;background:rgba(14,16,19,.88);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;gap:14px;animation:entree .2s ease both;}
+  .photo-box[hidden]{display:none;}
+  .photo-scroll{max-width:98vw;max-height:84vh;overflow:auto;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.5);background:#fff;display:flex;}
+  .photo-scroll img{display:block;margin:auto;max-width:98vw;max-height:84vh;object-fit:contain;cursor:zoom-in;}
+  .photo-scroll.zoom img{max-width:none;max-height:none;cursor:zoom-out;}
+  .photo-box .hint{color:#aeb2b9;font-size:12.5px;}
+  .photo-box .cap{color:#fff;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:24px;text-align:center;}
+  .photo-box button{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff;border-radius:10px;padding:10px 22px;font:600 14px 'Barlow',sans-serif;cursor:pointer;}
+  .adm-photo{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+  .adm-photo-prev{width:140px;height:105px;border-radius:12px;border:1px dashed #c5c9d0;background:#f6f7f9;display:flex;align-items:center;justify-content:center;color:#9a9ea5;font-size:12.5px;text-align:center;overflow:hidden;}
+  .adm-photo-prev img{width:100%;height:100%;object-fit:cover;}
+  .adm-thumb{width:46px;height:46px;border-radius:9px;object-fit:cover;border:1px solid var(--gris-bordure);flex:none;}
+  .opt-name{font-weight:600;font-size:15px;line-height:1.25;}
+  .opt-desc{font-size:12.8px;color:var(--gris-texte);margin-top:3px;line-height:1.35;}
+  .opt-price{
+    font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;white-space:nowrap;color:var(--acier-clair);
+  }
+  .opt-price.incl{font-family:'Barlow',sans-serif;font-size:11.5px;letter-spacing:.7px;text-transform:uppercase;
+    color:var(--vert);background:var(--vert-pale);padding:4px 10px;border-radius:12px;}
+  label.opt-row.on .opt-price:not(.incl){color:var(--rouge);}
+
+  label.opt-row.off{cursor:not-allowed;background:#f6f6f7;}
+  label.opt-row.off .opt-name,label.opt-row.off .opt-desc,label.opt-row.off .opt-price{opacity:.45;}
+  label.opt-row.off .opt-ctrl{background:#eceef1;border-color:#d6d9de;}
+  .opt-ref{margin-top:3px;font-size:11.5px;font-weight:600;letter-spacing:.3px;color:#9a9ea5;}
+  label.opt-row.off .opt-ref{opacity:.45;}
+  .recap-line span:last-child.incl{font-family:'Barlow',sans-serif;font-size:11.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;color:var(--vert);background:var(--vert-pale);padding:4px 10px;border-radius:12px;align-self:center;}
+  .recap-line .ref{margin-left:6px;font-size:11.5px;font-weight:600;letter-spacing:.3px;color:#9a9ea5;white-space:nowrap;}
+  .opt-block{display:none;margin-top:5px;font-size:12px;font-weight:700;color:var(--rouge);line-height:1.3;}
+  .opt-block::before{content:"⊘ ";}
+  label.opt-row.off .opt-block{display:block;}
+
+  .recap-note{font-size:12.5px;color:var(--gris-texte);text-align:right;margin:-2px 0 4px;padding-bottom:6px;border-bottom:1px dashed var(--gris-bordure);}
+  .hint{margin:12px 0 0;font-size:12.5px;color:var(--gris-texte);}
+
+  /* ---------- Étape 3 : formulaire ---------- */
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .form-grid label{display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;color:var(--acier-clair);letter-spacing:.3px;text-transform:uppercase;}
+  .form-grid input, .form-grid textarea, .champ{
+    font-family:'Barlow',sans-serif;padding:13px 14px;border-radius:10px;border:1.5px solid var(--gris-bordure);
+    font-size:15px;background:#fafafb;color:var(--acier);transition:.15s;text-transform:none;letter-spacing:0;font-weight:500;
+  }
+  .form-grid input:focus, .form-grid textarea:focus, .champ:focus{
+    outline:none;border-color:var(--rouge);background:#fff;box-shadow:0 0 0 4px rgba(200,16,46,.12);
+  }
+  .form-grid .full{grid-column:1 / -1;}
+  @media(max-width:560px){.form-grid{grid-template-columns:1fr;}}
+  .recap-line{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px dashed var(--gris-bordure);font-size:14.5px;}
+  .recap-line.base{font-weight:700;}
+  .recap-line span:last-child{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;white-space:nowrap;}
+  .recap-line.total{
+    border-bottom:none;margin-top:10px;padding:14px 16px;background:var(--acier);color:#fff;border-radius:10px;
+    font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;
+  }
+  .recap-line.total span:last-child{font-size:26px;color:#fff;}
+
+  /* ---------- Menu réservé (administration de la gamme) ---------- */
+  [hidden]{display:none !important;}
+  .brand-mark{user-select:none;-webkit-user-select:none;cursor:default;}
+  .empty-state{text-align:center;color:var(--gris-texte);font-weight:600;}
+  .admin-overlay{position:fixed;inset:0;z-index:100;background:var(--gris-fond);overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .admin-overlay[hidden]{display:none;}
+  .admin-bar{
+    position:sticky;top:0;z-index:5;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    padding:14px 20px;background:linear-gradient(120deg,var(--acier) 0%,var(--acier-fonce) 100%);color:#fff;
+    box-shadow:0 4px 16px rgba(0,0,0,.22);
+  }
+  .admin-bar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--rouge) 0,var(--rouge) 35%,transparent 100%);}
+  .admin-title{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:21px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .sync-chip{font-family:'Barlow',sans-serif;font-size:11.5px;font-weight:700;border-radius:10px;padding:3px 10px;background:rgba(255,255,255,.12);color:#d7d9dd;white-space:nowrap;}
+  .sync-chip.ok{background:rgba(31,157,85,.22);color:#9be3bd;}
+  .sync-chip.off{background:rgba(242,160,30,.25);color:#ffd48a;}
+  .adm-sync{font-size:13px;margin:0 0 12px;line-height:1.45;}
+  .admin-title small{font-family:'Barlow',sans-serif;font-size:10.5px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;background:var(--rouge);padding:3px 9px;border-radius:10px;}
+  .btn-light{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:#fff;padding:8px 16px;border-radius:9px;font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;}
+  .btn-light:hover{background:rgba(255,255,255,.18);}
+  .admin-body{max-width:900px;margin:0 auto;padding:22px 20px 40px;}
+  .adm-head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:14px;}
+  .adm-head h2{margin:0;font-size:28px;}
+  .adm-note{background:#eef3fb;border:1px solid #cfdcf2;color:#27466f;border-radius:12px;padding:11px 15px;font-size:13px;line-height:1.45;margin-bottom:16px;}
+  .adm-fam-head{display:flex;align-items:center;gap:10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:22px;margin:22px 0 10px;}
+  .adm-fam-head::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gris-bordure),transparent);}
+  .adm-fam-head .adm-count{font-family:'Barlow',sans-serif;font-size:12px;color:var(--gris-texte);background:#e7e8eb;border-radius:10px;padding:2px 9px;}
+  .adm-fam-head .adm-arrows{order:3;display:flex;gap:4px;}
+  .adm-fam-head{flex-wrap:wrap;}
+  .adm-fam-head .adm-arrows{flex-wrap:wrap;}
+  @media(max-width:560px){.adm-fam-head::after{display:none;}.adm-fam-head .adm-arrows{flex-basis:100%;}}
+  .adm-model{background:#fff;border:1px solid var(--gris-bordure);border-radius:var(--radius);padding:14px 16px;margin-bottom:10px;box-shadow:var(--ombre);display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;}
+  .adm-model.off{background:#f6f6f7;}
+  .adm-model.off .adm-model-main{opacity:.6;}
+  .adm-model-name{font-weight:700;font-size:16.5px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .adm-model-meta{font-size:12.8px;color:var(--gris-texte);margin-top:3px;}
+  .adm-badge{font-size:10.5px;font-weight:700;letter-spacing:.7px;text-transform:uppercase;background:#e2e4e8;color:#5b6068;border-radius:10px;padding:2px 9px;}
+  .adm-actions{display:flex;gap:6px;flex-wrap:wrap;}
+  .btn-sm{padding:8px 12px;font-size:13px;border-radius:9px;border:1.5px solid var(--gris-bordure);background:#fff;color:var(--acier);font-weight:700;cursor:pointer;font-family:inherit;line-height:1.1;}
+  .btn-sm:hover{background:#f4f5f6;}
+  .btn-sm:active{transform:scale(.97);}
+  .btn-sm:disabled{opacity:.35;cursor:not-allowed;}
+  .btn-sm.danger{color:var(--rouge-fonce);border-color:#f1c3cb;}
+  .adm-tools{display:flex;gap:10px;flex-wrap:wrap;}
+  .adm-hash{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;}
+  .adm-hash .champ{flex:1;min-width:180px;}
+  .adm-code{display:block;margin-top:10px;font-size:12px;word-break:break-all;background:#f1f2f4;border-radius:8px;padding:10px 12px;user-select:all;}
+  .adm-switch{display:flex;align-items:center;gap:12px;margin-top:16px;font-weight:600;font-size:14.5px;cursor:pointer;}
+  .adm-switch input{width:22px;height:22px;accent-color:var(--rouge);}
+  .adm-fields-err{background:var(--rouge-pale);border:1px solid #f1c3cb;color:var(--rouge-fonce);border-radius:12px;padding:11px 15px;font-size:13.5px;font-weight:600;margin-bottom:14px;}
+  .champ.invalid{border-color:var(--rouge);background:var(--rouge-pale);}
+  .adm-warn{background:#fff4e5;border:1px solid #f2d199;color:#7a4f00;border-radius:12px;padding:12px 16px;margin:0 0 16px;font-size:13.5px;line-height:1.45;}
+  .adm-warn ul{margin:6px 0 0;padding-left:18px;}
+  .adm-warn li{margin-bottom:3px;}
+  .adm-quick{display:flex;gap:8px;margin:12px 0;flex-wrap:wrap;align-items:center;}
+  .adm-cat{border:1px solid var(--gris-bordure);border-radius:var(--radius);margin-bottom:12px;overflow:hidden;background:#fff;}
+  .adm-cat-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px;background:#fafafb;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;}
+  .adm-cat-head .adm-cat-right{display:flex;align-items:center;gap:8px;font-family:'Barlow',sans-serif;}
+  .adm-cat-count{font-size:12.5px;font-weight:700;color:var(--gris-texte);min-width:34px;text-align:right;}
+  .adm-opt,.adm-pick{display:flex;align-items:center;gap:12px;padding:11px 16px;border-top:1px solid #eef0f3;cursor:pointer;min-height:52px;}
+  .adm-opt:hover,.adm-pick:hover{background:#fafafb;}
+  .adm-opt input,.adm-pick input{width:21px;height:21px;accent-color:var(--rouge);flex:none;}
+  .adm-opt-main{flex:1;min-width:0;}
+  .adm-opt-name{font-weight:600;font-size:14.5px;}
+  .adm-opt-ref{margin-left:6px;font-size:11.5px;font-weight:600;color:#9a9ea5;letter-spacing:.3px;}
+  .adm-opt-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px;}
+  .adm-tag{font-size:11px;font-weight:600;border-radius:8px;padding:2px 8px;background:#eef0f3;color:#5b6068;}
+  .adm-tag.req{background:#fff4e5;color:#8a5a00;}
+  .adm-tag.inc{background:var(--rouge-pale);color:var(--rouge-fonce);}
+  .adm-opt-price{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:17px;white-space:nowrap;color:var(--acier-clair);}
+  .adm-tabs{display:flex;gap:6px;margin-bottom:22px;border-bottom:2px solid var(--gris-bordure);}
+  .adm-tab{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:21px;padding:10px 22px;border:0;background:none;cursor:pointer;color:var(--gris-texte);border-bottom:3px solid transparent;margin-bottom:-2px;}
+  .adm-tab.on{color:var(--rouge);border-bottom-color:var(--rouge);}
+  .adm-picklist{max-height:340px;overflow:auto;margin-top:10px;border-radius:var(--radius);}
+  .adm-pickhint{font-size:13px;color:var(--gris-texte);margin:0 0 10px;line-height:1.45;}
+  .adm-save-row{position:sticky;bottom:0;display:flex;justify-content:flex-end;gap:12px;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);border-top:1px solid var(--gris-bordure);padding:12px 20px;margin:20px -20px -40px;box-shadow:0 -6px 20px rgba(0,0,0,.07);}
+  .modal-back{position:fixed;inset:0;z-index:150;background:rgba(20,22,26,.55);display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal-back[hidden]{display:none;}
+  .modal{background:#fff;border-radius:16px;padding:22px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.35);}
+  .modal h3{margin:0 0 12px;font-size:23px;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}
+  .modal-err{color:var(--rouge);font-size:13px;font-weight:600;min-height:18px;margin-top:8px;}
+  .toast{position:fixed;left:50%;bottom:96px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--acier);color:#fff;padding:12px 18px;border-radius:12px;font-size:14px;font-weight:600;z-index:300;transition:opacity .25s,transform .25s;max-width:calc(100% - 32px);text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.3);}
+  .toast.show{opacity:1;transform:translate(-50%,0);}
+  .toast.err{background:var(--rouge-fonce);}
+  @media(max-width:560px){.admin-bar{padding:12px 14px;}.admin-body{padding:18px 14px 40px;}.adm-save-row{margin:20px -14px -40px;padding:12px 14px;}}
+
+  /* ---------- Boutons ---------- */
+  .btn{
+    border:none;border-radius:11px;padding:13px 22px;font-family:inherit;font-weight:700;font-size:15px;cursor:pointer;
+    transition:transform .08s, box-shadow .08s, background .15s;position:relative;
+  }
+  .btn-primary{background:var(--rouge);color:#fff;box-shadow:0 4px 0 #8a0a1f, 0 8px 16px rgba(200,16,46,.25);}
+  .btn-primary:hover{background:#d8122f;}
+  .btn-primary:active{transform:translateY(3px);box-shadow:0 1px 0 #8a0a1f;}
+  .btn-primary:disabled{background:#d9b3ba;box-shadow:0 4px 0 #c49aa2;cursor:not-allowed;}
+  .btn-secondary{background:#fff;border:1.5px solid var(--gris-bordure);color:var(--acier);box-shadow:0 3px 0 #d3d6db;}
+  .btn-secondary:active{transform:translateY(2px);box-shadow:0 1px 0 #d3d6db;}
+
+  /* ---------- Barre du bas ---------- */
+  .footer-bar{
+    position:fixed;bottom:0;left:0;right:0;background:rgba(255,255,255,.96);backdrop-filter:blur(8px);
+    border-top:1px solid var(--gris-bordure);padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+    display:flex;align-items:center;justify-content:space-between;gap:12px;z-index:30;
+    box-shadow:0 -6px 20px rgba(0,0,0,.07);
+  }
+  .footer-total-wrap{display:flex;flex-direction:column;line-height:1.05;}
+  .footer-total-label{font-size:11px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;color:#9a9ea5;}
+  .footer-total{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:30px;color:var(--rouge);}
+  .footer-total small{font-size:14px;color:var(--gris-texte);margin-left:3px;}
+  .footer-actions{display:flex;gap:12px;}
+  @media(max-width:480px){.btn{padding:12px 16px;font-size:14px;}.footer-total{font-size:25px;}}
+
+  .badge-example{
+    display:inline-block;background:#fff4e5;color:#8a5a00;border:1px solid #f2d199;
+    font-size:11.5px;padding:4px 11px;border-radius:20px;margin-bottom:8px;font-weight:600;
+  }
+
+  /* ---------- Signature ---------- */
+  .signature-wrap{
+    position:relative;border:2px dashed #cfd3d9;border-radius:var(--radius);
+    background:#fff;height:190px;overflow:hidden;
+  }
+  .signature-wrap::after{
+    content:"✕";position:absolute;left:18px;bottom:46px;color:#c3c7ce;font-size:15px;pointer-events:none;
+  }
+  .signature-wrap::before{
+    content:"";position:absolute;left:44px;right:24px;bottom:50px;height:1px;background:#d3d6db;pointer-events:none;
+  }
+  .sig-canvas{width:100%;height:100%;display:block;touch-action:none;cursor:crosshair;position:relative;z-index:1;}
+  .sig-placeholder{
+    position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    color:#c2c5cb;font-size:15px;font-weight:600;pointer-events:none;letter-spacing:.4px;
+  }
+
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="brand">
+    <div class="brand-mark" id="brandMark">BM</div>
+    <div class="brand-text">
+      <h1>Configurateur Commercial</h1>
+      <span>Bennes Maupu</span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span id="userLabel">Commercial</span>
+    <button onclick="resetConfig()">Nouveau devis</button>
+  </div>
+</header>
+
+<div class="steps">
+  <div class="step-pill" id="pill-1" data-n="1">Modèle</div>
+  <div class="step-pill" id="pill-2" data-n="2">Options</div>
+  <div class="step-pill" id="pill-3" data-n="3">Client &amp; devis</div>
+</div>
+
+<main>
+
+  <!-- ETAPE 1 : MODELE -->
+  <section id="step1" class="step-view">
+    <span class="badge-example">Données d'exemple — à remplacer par la gamme réelle</span>
+    <div id="famillesContainer"></div>
+  </section>
+
+  <!-- ETAPE 2 : OPTIONS -->
+  <section id="step2" class="step-view" style="display:none;">
+    <div class="card" id="modeleRecapCard"></div>
+    <div id="categoriesContainer"></div>
+  </section>
+
+  <!-- ETAPE 3 : CLIENT + DEVIS -->
+  <section id="step3" class="step-view" style="display:none;">
+    <div class="card">
+      <h3 style="margin-top:0;">Informations client</h3>
+      <div class="form-grid">
+        <label>Nom / Société <input type="text" id="cliNom" placeholder="Ex : EARL Dupont"></label>
+        <label>Contact <input type="text" id="cliContact" placeholder="Nom du contact"></label>
+        <label>Téléphone <input type="text" id="cliTel" placeholder="06 00 00 00 00"></label>
+        <label>E-mail <input type="text" id="cliEmail" placeholder="contact@exemple.fr"></label>
+        <label class="full">Adresse <input type="text" id="cliAdresse" placeholder="Adresse complète"></label>
+        <label class="full">Remarques commerciales <textarea id="cliNotes" rows="2" placeholder="Délai souhaité, conditions particulières, etc."></textarea></label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Conditions commerciales</h3>
+      <div class="form-grid">
+        <label>Remise (%)
+          <input type="number" id="remisePct" class="champ" inputmode="decimal" min="0" max="100" step="0.1" placeholder="0" oninput="onConditionsChange()" onchange="onConditionsChange(true)">
+        </label>
+        <label>Remise supplémentaire (%)
+          <input type="number" id="remisePct2" class="champ" inputmode="decimal" min="0" max="100" step="0.1" placeholder="0" oninput="onConditionsChange()" onchange="onConditionsChange(true)">
+        </label>
+        <label>Frais de transport (€ HT)
+          <input type="number" id="fraisTransport" class="champ" inputmode="decimal" min="0" step="1" placeholder="0" oninput="onConditionsChange()" onchange="onConditionsChange(true)">
+        </label>
+      </div>
+      <p class="hint">Les remises s'appliquent au matériel et aux options, pas au transport. Elles se cumulent en cascade : la remise supplémentaire porte sur le montant déjà remisé (20 % puis 10 % = 28 % au total).</p>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Récapitulatif du devis</h3>
+      <div id="recapLines"></div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Signature du client</h3>
+      <p style="font-size:13px;color:#6b7078;margin-top:-6px;">Le client valide la configuration et les prix affichés ci-dessus en signant ci-dessous.</p>
+      <label style="display:flex;flex-direction:column;gap:6px;font-size:12.5px;font-weight:700;letter-spacing:.3px;text-transform:uppercase;color:var(--acier-clair);margin-bottom:12px;">
+        Nom du signataire
+        <input type="text" id="cliSignataire" class="champ" placeholder="Nom et prénom">
+      </label>
+      <div class="signature-wrap">
+        <canvas id="sigCanvas" class="sig-canvas"></canvas>
+        <div class="sig-placeholder" id="sigPlaceholder">Signer ici</div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+        <span id="sigStatus" style="font-size:12.5px;color:#8a8f98;">Aucune signature</span>
+        <button class="btn btn-secondary" type="button" onclick="clearSignature()">Effacer</button>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div class="footer-bar">
+  <div class="footer-total-wrap"><span class="footer-total-label">Total HT</span><span class="footer-total" id="footerTotal">0 €</span></div>
+  <div class="footer-actions" id="footerActions"></div>
+</div>
+
+<!-- ===== MENU RÉSERVÉ : administration de la gamme ===== -->
+<div id="adminOverlay" class="admin-overlay" hidden>
+  <div class="admin-bar">
+    <div class="admin-title">Administration de la gamme <small>Accès réservé</small><span class="sync-chip" id="syncChip" hidden></span></div>
+    <button type="button" class="btn-light" id="adminClose">Fermer</button>
+  </div>
+  <div class="admin-body" id="adminBody"></div>
+</div>
+
+<div class="opt-sheet" id="optSheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" hidden>
+  <div class="sheet-bar">
+    <button type="button" class="sheet-back" id="sheetBack">‹ Retour</button>
+    <div class="sheet-ttl"><small>Choix des options</small><h2 id="sheetTitle"></h2></div>
+  </div>
+  <div class="sheet-body"><div class="sheet-inner">
+    <div class="sheet-opts" id="sheetOpts"></div>
+  </div></div>
+  <div class="sheet-foot"><div class="sheet-foot-in">
+    <div class="footer-total-wrap"><span class="footer-total-label">Total HT</span><span class="sheet-total" id="sheetTotal"></span></div>
+    <button type="button" class="btn btn-primary" id="sheetOk">Valider</button>
+  </div></div>
+</div>
+
+<div class="photo-box" id="photoBox" hidden role="dialog" aria-modal="true">
+  <div class="photo-scroll" id="photoScroll"><img id="photoImg" alt=""></div>
+  <div class="cap" id="photoCap"></div>
+  <div class="hint">Touchez l'image pour l'afficher en taille réelle</div>
+  <button type="button" id="photoClose">Fermer</button>
+</div>
+
+<div class="modal-back" id="pinModal" hidden>
+  <div class="modal">
+    <h3>Accès réservé</h3>
+    <input type="password" id="pinInput" class="champ" placeholder="Code d'accès" autocomplete="off" style="width:100%">
+    <div class="modal-err" id="pinErr"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="pinCancel">Annuler</button>
+      <button type="button" class="btn btn-primary" id="pinOk">Valider</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="textModal" hidden>
+  <div class="modal">
+    <h3 id="textTitle">Nom</h3>
+    <input type="text" id="textInput" class="champ" maxlength="60" autocomplete="off" style="width:100%">
+    <div class="modal-err" id="textErr"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="textCancel">Annuler</button>
+      <button type="button" class="btn btn-primary" id="textOk">Valider</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-back" id="confirmModal" hidden>
+  <div class="modal">
+    <h3 id="confirmTitle">Confirmation</h3>
+    <p id="confirmMsg" style="margin:0;font-size:14.5px;line-height:1.45"></p>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="confirmCancel">Annuler</button>
+      <button type="button" class="btn btn-primary" id="confirmOk">Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status"></div>
+
+<script src="jspdf.umd.min.js"></script>
+<script>
+/* =====================================================
+   OPTIONS, CATÉGORIES ET MODÈLES : tout se paramètre dans le menu réservé
+   (données d'exemple dans DEFAULT_CATALOGUE plus bas).
+===================================================== */
+// Index construits à partir du catalogue (voir rebuildIndex) : catégories et options modifiables dans le menu réservé
+let CATEGORIES_DEF = Object.create(null);   // id catégorie -> { id, nom, options:[...] }
+let OPT_INDEX = Object.create(null);        // id option -> option
+
+let state = { modele:null, options:{}, quantites:{}, remisePct:0, remise2Pct:0, transport:0 };
+
+function isOptionAvailable(o){
+  return !!state.modele && state.modele.options.includes(o.id);
+}
+
+// Catégories à afficher pour un modèle : celles qui contiennent au moins une de ses options (ordre de CATEGORIES_DEF)
+function categoriesOf(m){
+  return Object.keys(CATEGORIES_DEF).filter(k => CATEGORIES_DEF[k].options.some(o => m.options.includes(o.id)));
+}
+
+function getVisibleOptions(catKey){
+  return CATEGORIES_DEF[catKey].options.filter(isOptionAvailable);
+}
+
+// ---------- REGLES ENTRE OPTIONS ----------
+// incompatibles:[ids]  -> choisir l'une bloque l'autre (règle symétrique : il suffit de la déclarer d'un côté)
+// requiert:[ids]       -> l'option n'est possible que si toutes celles listées sont choisies
+function rebuildIndex(){
+  CATEGORIES_DEF = Object.create(null); OPT_INDEX = Object.create(null);
+  (catalogue.categories || []).forEach(c => {
+    CATEGORIES_DEF[c.id] = c;
+    c.options.forEach(o => { OPT_INDEX[o.id] = o; });
+  });
+}
+// Prix effectif d'une option sur un modèle : prix particulier du modèle s'il existe, sinon prix général de l'option
+function optPrix(o, m){
+  m = m || state.modele;
+  const v = m && m.prixOptions ? m.prixOptions[o.id] : undefined;
+  return typeof v === 'number' && isFinite(v) && v >= 0 ? v : o.prix;
+}
+function catOf(o){
+  const k = Object.keys(CATEGORIES_DEF).find(k => CATEGORIES_DEF[k].options.includes(o));
+  return k ? CATEGORIES_DEF[k] : null;
+}
+
+/* =====================================================
+   CATALOGUE : familles, modèles et options disponibles sur chaque modèle
+   - Valeurs par défaut ci-dessous (données d'exemple).
+   - Modifiable dans le menu réservé ; enregistré sur CET appareil (localStorage)
+     tant que la base Supabase n'est pas branchée (loadCatalogue / saveCatalogue = seuls points à remplacer).
+===================================================== */
+const CATALOGUE_KEY = 'bm_configurateur_catalogue_v1';
+const DEFAULT_CATALOGUE = {
+  version: 2,
+  updatedAt: '2026-10-13T00:00:00.000Z',
+  categories: [
+    {
+      "id": "chassis",
+      "nom": "Châssis & essieux",
+      "options": [
+        {
+          "id": "ess-2",
+          "ref": "CH-ESS2",
+          "nom": "2 essieux standard",
+          "desc": "Configuration de base",
+          "prix": 0,
+          "groupe": "essieux",
+          "defaut": true,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "ess-3",
+          "ref": "CH-ESS3R",
+          "nom": "3 essieux renforcés",
+          "desc": "Charge utile augmentée",
+          "prix": 3200,
+          "groupe": "essieux",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "susp-lames",
+          "ref": "CH-SLAM",
+          "nom": "Suspension à lames",
+          "desc": "Configuration de base",
+          "prix": 0,
+          "groupe": "suspension",
+          "defaut": true,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "susp-pneu",
+          "ref": "CH-SPNE",
+          "nom": "Suspension pneumatique",
+          "desc": "Confort de roulage amélioré",
+          "prix": 2100,
+          "groupe": "suspension",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        }
+      ]
+    },
+    {
+      "id": "hydraulique",
+      "nom": "Hydraulique & vérin",
+      "options": [
+        {
+          "id": "ver-simple",
+          "ref": "HY-VSE",
+          "nom": "Vérin simple effet",
+          "desc": "Configuration de base",
+          "prix": 0,
+          "groupe": "verin",
+          "defaut": true,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "ver-tel4",
+          "ref": "HY-VT4",
+          "nom": "Vérin télescopique 4 étages",
+          "desc": "Levée plus haute, bascule plus rapide",
+          "prix": 1850,
+          "groupe": "verin",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "kit-hydr-suppl",
+          "ref": "HY-KIT2",
+          "nom": "Kit hydraulique additionnel (trappe/vis)",
+          "desc": "Pour commande de vis de vidange ou trappe",
+          "prix": 980,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        }
+      ]
+    },
+    {
+      "id": "bachage",
+      "nom": "Bâchage",
+      "options": [
+        {
+          "id": "bache-manuelle",
+          "ref": "BA-MAN",
+          "nom": "Bâche manuelle",
+          "desc": "Configuration de base",
+          "prix": 0,
+          "groupe": "bache",
+          "defaut": true,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "bache-elec",
+          "ref": "BA-ELEC",
+          "nom": "Bâchage électrique motorisé",
+          "desc": "Commande depuis la cabine",
+          "prix": 1450,
+          "groupe": "bache",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": [
+            "filet-lat"
+          ]
+        },
+        {
+          "id": "filet-lat",
+          "ref": "BA-FIL",
+          "nom": "Filets latéraux de sécurité",
+          "desc": "Protection chargement",
+          "prix": 320,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        }
+      ]
+    },
+    {
+      "id": "finition",
+      "nom": "Peinture & finition",
+      "options": [
+        {
+          "id": "peinture-std",
+          "ref": "PE-STD",
+          "nom": "Peinture bleue Maupu standard",
+          "desc": "Configuration de base",
+          "prix": 0,
+          "groupe": "peinture",
+          "defaut": true,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "peinture-pers",
+          "ref": "PE-RAL",
+          "nom": "Peinture couleur personnalisée (RAL)",
+          "desc": "Sur devis selon teinte",
+          "prix": 650,
+          "groupe": "peinture",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "floquage",
+          "ref": "PE-FLO",
+          "nom": "Floquage / marquage société",
+          "desc": "Logo et coordonnées client",
+          "prix": 180,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        }
+      ]
+    },
+    {
+      "id": "accessoires",
+      "nom": "Accessoires",
+      "options": [
+        {
+          "id": "eclairage-led",
+          "ref": "AC-LED",
+          "nom": "Éclairage LED complet",
+          "desc": "",
+          "prix": 290,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "cam-recul",
+          "ref": "AC-CAM",
+          "nom": "Caméra de recul",
+          "desc": "Avec écran cabine",
+          "prix": 410,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "kit-signal",
+          "ref": "AC-SIG",
+          "nom": "Kit de signalisation renforcé",
+          "desc": "Panneaux + gyrophare",
+          "prix": 260,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [],
+          "incompatibles": []
+        },
+        {
+          "id": "tapis-roul",
+          "ref": "AC-TAPIS",
+          "nom": "Tapis roulant de vidange",
+          "desc": "Pour vidange latérale progressive",
+          "prix": 2650,
+          "groupe": "",
+          "defaut": false,
+          "requiert": [
+            "ver-tel4"
+          ],
+          "incompatibles": [
+            "susp-pneu"
+          ]
+        }
+      ]
+    }
+  ],
+  familles: ["Bennes agricoles", "Remorques céréalières", "Bennes TP"],
+  modeles: [
+    {
+      "famille": "Bennes agricoles",
+      "id": "ba-9132",
+      "ref": "BM-9132-EVO40",
+      "nom": "9132 EVO 40",
+      "desc": "Benne agricole monocoque, 40 m³, 3 essieux.",
+      "prixBase": 42500,
+      "actif": true,
+      "options": [
+        "ess-2",
+        "ess-3",
+        "susp-lames",
+        "susp-pneu",
+        "ver-simple",
+        "ver-tel4",
+        "bache-manuelle",
+        "bache-elec",
+        "filet-lat",
+        "peinture-std",
+        "peinture-pers",
+        "floquage",
+        "eclairage-led",
+        "cam-recul",
+        "kit-signal",
+        "tapis-roul"
+      ]
+    },
+    {
+      "famille": "Bennes agricoles",
+      "id": "ba-7020",
+      "ref": "BM-7020-EVO20",
+      "nom": "7020 EVO 20",
+      "desc": "Benne agricole compacte, 20 m³, 2 essieux.",
+      "prixBase": 28900,
+      "actif": true,
+      "options": [
+        "ess-2",
+        "ess-3",
+        "susp-lames",
+        "susp-pneu",
+        "ver-simple",
+        "bache-manuelle",
+        "bache-elec",
+        "filet-lat",
+        "peinture-std",
+        "peinture-pers",
+        "floquage",
+        "eclairage-led",
+        "cam-recul",
+        "kit-signal"
+      ]
+    },
+    {
+      "famille": "Remorques céréalières",
+      "id": "rc-18",
+      "ref": "BM-RC-18",
+      "nom": "Céréalière 18 m³",
+      "desc": "Trémie céréalière, vis de vidange, capacité 18 m³.",
+      "prixBase": 24700,
+      "actif": true,
+      "options": [
+        "ess-2",
+        "ess-3",
+        "susp-lames",
+        "susp-pneu",
+        "ver-simple",
+        "kit-hydr-suppl",
+        "bache-manuelle",
+        "bache-elec",
+        "filet-lat",
+        "eclairage-led",
+        "cam-recul",
+        "kit-signal"
+      ]
+    },
+    {
+      "famille": "Bennes TP",
+      "id": "tp-25",
+      "ref": "BM-TP-25",
+      "nom": "TP 25T Chantier",
+      "desc": "Benne travaux publics renforcée, charge utile 25T.",
+      "prixBase": 38900,
+      "actif": true,
+      "options": [
+        "ess-2",
+        "ess-3",
+        "susp-lames",
+        "susp-pneu",
+        "ver-simple",
+        "ver-tel4",
+        "peinture-std",
+        "peinture-pers",
+        "floquage",
+        "eclairage-led",
+        "cam-recul",
+        "kit-signal",
+        "tapis-roul"
+      ]
+    }
+  ]
+};
+
+function clone(o){ return JSON.parse(JSON.stringify(o)); }
+function esc(v){ return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function newId(){ return 'm' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+const SAFE_ID = /^[A-Za-z][A-Za-z0-9_-]{0,39}$/;
+function idOk(id){ return SAFE_ID.test(id) && !(id in Object.prototype); }
+function slugId(prefix, text){
+  let s = String(text || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 24);
+  return (s ? s : prefix) + '-' + Math.random().toString(36).slice(2, 6);
+}
+function newOptId(nom){ return slugId('opt', nom); }
+function newCatId(nom){ return slugId('cat', nom); }
+/* =====================================================
+   SUPABASE STORAGE (photos des options)
+   Renseignez ces 3 valeurs pour que les nouvelles photos soient envoyées sur Supabase.
+   Laissées vides : les photos restent sur l'appareil (IndexedDB).
+===================================================== */
+const SUPABASE_URL = 'https://qesvglotrfgjqbhucvnp.supabase.co';        // ex : https://abcdxyz.supabase.co
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFlc3ZnbG90cmZnanFiaHVjdm5wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4OTI5OTYsImV4cCI6MjEwNzQ2ODk5Nn0.a3eM8FTVFmPDglY9QDX0sDVU8pg0yxekQKisceTUV4Q';   // clé « anon » (publique) du projet
+const PHOTO_BUCKET = 'option-photos';   // bucket PUBLIC en lecture
+const supaOn = () => !!(SUPABASE_URL && SUPABASE_ANON_KEY);
+const supaPhotoPrefix = () => SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/public/' + PHOTO_BUCKET + '/';
+
+const PHOTO_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/;
+function cleanPhoto(v){
+  v = String(v || '');
+  if(v.startsWith('data:')) return v.length <= 28000000 && PHOTO_RE.test(v) ? v : '';
+  // photo hébergée sur Supabase : uniquement une URL de NOTRE bucket public
+  if(supaOn() && v.length <= 400 && v.startsWith(supaPhotoPrefix()) && /^[A-Za-z0-9._~%\/:-]+$/.test(v)) return v;
+  return '';
+}
+// Lien vidéo : adresse http(s) uniquement (YouTube, Vimeo, Dailymotion…)
+function cleanVideo(v){
+  v = String(v || '').trim();
+  if(!v || v.length > 500) return '';
+  try{ const u = new URL(v); return (u.protocol === 'https:' || u.protocol === 'http:') && u.hostname.includes('.') ? u.href : ''; }
+  catch(e){ return ''; }
+}
+function strList(v){ return Array.isArray(v) ? v.map(x => String(x)) : []; }
+
+// Nettoie / valide un catalogue (stockage local ou fichier importé) : types, ids sûrs, références inconnues retirées.
+// Un ancien catalogue (v1, sans catégories) reçoit les catégories d'exemple : aucune perte.
+function sanitizeCatalogue(c){
+  if(!c || typeof c !== 'object' || !Array.isArray(c.modeles)) return null;
+  const rawCats = Array.isArray(c.categories) ? c.categories : clone(DEFAULT_CATALOGUE).categories;
+  const catIds = new Set(), optIds = new Set(), remap = new Map(), categories = [];
+  rawCats.forEach(rc => {
+    if(!rc || typeof rc !== 'object') return;
+    let cid = String(rc.id || '').trim();
+    if(!idOk(cid) || catIds.has(cid)) cid = newCatId(rc.nom);
+    catIds.add(cid);
+    const cat = { id: cid, nom: String(rc.nom || '').trim() || 'Sans nom', options: [] };
+    (Array.isArray(rc.options) ? rc.options : []).forEach(ro => {
+      if(!ro || typeof ro !== 'object') return;
+      const nom = String(ro.nom || '').trim();
+      if(!nom) return;
+      const old = String(ro.id || '').trim();
+      let oid = old;
+      if(!idOk(oid) || optIds.has(oid)) oid = newOptId(nom);
+      optIds.add(oid);
+      if(!remap.has(old) && old) remap.set(old, oid);
+      const prix = Number(ro.prix);
+      cat.options.push({
+        id: oid, ref: String(ro.ref || '').trim(), nom, desc: String(ro.desc || '').trim(),
+        prix: isFinite(prix) && prix >= 0 ? round2(prix) : 0,
+        groupe: String(ro.groupe || '').trim().slice(0, 40),
+        defaut: ro.defaut === true, photo: cleanPhoto(ro.photo), video: cleanVideo(ro.video),
+        requiert: strList(ro.requiert), incompatibles: strList(ro.incompatibles)
+      });
+    });
+    categories.push(cat);
+  });
+  const fix = (list, self) => {
+    const out = [];
+    list.forEach(x => { const n = remap.get(x); if(n && n !== self && !out.includes(n)) out.push(n); });
+    return out;
+  };
+  categories.forEach(cat => cat.options.forEach(o => { o.requiert = fix(o.requiert, o.id); o.incompatibles = fix(o.incompatibles, o.id); }));
+  const order = [];
+  categories.forEach(cat => cat.options.forEach(o => order.push(o.id)));
+
+  const ids = new Set(), modeles = [];
+  c.modeles.forEach(m => {
+    if(!m || typeof m !== 'object') return;
+    const nom = String(m.nom || '').trim();
+    if(!nom) return;
+    let id = String(m.id || '').trim();
+    if(!/^[A-Za-z0-9_-]{1,40}$/.test(id) || ids.has(id)) id = newId();
+    ids.add(id);
+    const prix = Number(m.prixBase);
+    const wanted = new Set(Array.isArray(m.options) ? m.options.map(x => remap.get(String(x))).filter(Boolean) : []);
+    modeles.push({
+      id,
+      famille: String(m.famille || '').trim() || 'Autres',
+      ref: String(m.ref || '').trim(),
+      nom,
+      desc: String(m.desc || '').trim(),
+      prixBase: isFinite(prix) && prix >= 0 ? round2(prix) : 0,
+      actif: m.actif !== false,
+      options: order.filter(oid => wanted.has(oid)),
+      prixOptions: {}
+    });
+    const mm = modeles[modeles.length - 1];
+    if(m.prixOptions && typeof m.prixOptions === 'object'){
+      Object.keys(m.prixOptions).forEach(k => {
+        const nid = remap.get(k), v = Number(m.prixOptions[k]);
+        if(nid && mm.options.includes(nid) && m.prixOptions[k] !== '' && m.prixOptions[k] !== null && isFinite(v) && v >= 0) mm.prixOptions[nid] = round2(v);
+      });
+    }
+  });
+  const familles = [];
+  (Array.isArray(c.familles) ? c.familles : []).forEach(f => {
+    f = String(f || '').trim();
+    if(f && !familles.includes(f) && modeles.some(m => m.famille === f)) familles.push(f);
+  });
+  modeles.forEach(m => { if(!familles.includes(m.famille)) familles.push(m.famille); });
+  return { version: 2, updatedAt: String(c.updatedAt || new Date().toISOString()), categories, familles, modeles };
+}
+
+function loadCatalogue(){
+  try{
+    const raw = localStorage.getItem(CATALOGUE_KEY);
+    if(raw){ const c = sanitizeCatalogue(JSON.parse(raw)); if(c) return c; }
+  }catch(e){}
+  return sanitizeCatalogue(clone(DEFAULT_CATALOGUE));
+}
+
+function saveCatalogue(){
+  rebuildIndex();
+  catalogue.familles = catalogue.familles.filter(f => catalogue.modeles.some(m => m.famille === f));
+  catalogue.updatedAt = new Date().toISOString();
+  let ok = true;
+  try{ localStorage.setItem(CATALOGUE_KEY, JSON.stringify(catalogue, (k, v) => k === 'photo' && typeof v === 'string' && v.startsWith('data:') ? undefined : v)); }   // les photos (lourdes) vont dans IndexedDB
+  catch(e){ ok = false; }
+  savePhotos();
+  if(typeof scheduleRemotePush === 'function') scheduleRemotePush();
+  return ok;
+}
+
+/* ---- Photos des options : IndexedDB (pleine qualité, bien plus d'espace que localStorage) ---- */
+let photosReady = Promise.resolve(), photoSaved = new Map(), photoQueue = Promise.resolve();
+function photoDB(){
+  return new Promise((res, rej) => {
+    if(!window.indexedDB){ rej(new Error('no idb')); return; }
+    const r = indexedDB.open('bm_configurateur_photos', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('photos');
+    r.onsuccess = () => res(r.result);
+    r.onerror = () => rej(r.error);
+  });
+}
+function savePhotos(){
+  photoQueue = photoQueue.then(() => photosReady).then(async () => {
+    const want = new Map();
+    Object.keys(OPT_INDEX).forEach(id => { if(OPT_INDEX[id].photo && OPT_INDEX[id].photo.startsWith('data:')) want.set(id, OPT_INDEX[id].photo); });
+    const put = [...want].filter(([id, v]) => photoSaved.get(id) !== v);
+    const del = [...photoSaved.keys()].filter(id => !want.has(id));
+    if(!put.length && !del.length) return;
+    const db = await photoDB();
+    await new Promise((res, rej) => {
+      const tx = db.transaction('photos', 'readwrite'), st = tx.objectStore('photos');
+      put.forEach(([id, v]) => st.put(v, id));
+      del.forEach(id => st.delete(id));
+      tx.oncomplete = res; tx.onerror = () => rej(tx.error); tx.onabort = () => rej(tx.error);
+    });
+    db.close();
+    put.forEach(([id, v]) => photoSaved.set(id, v));
+    del.forEach(id => photoSaved.delete(id));
+  }).catch(() => { if(typeof showToast === 'function') showToast("Photos : enregistrement impossible sur cet appareil (espace insuffisant ou navigation privée).", true); });
+}
+function loadPhotos(){
+  photosReady = (async () => {
+    const db = await photoDB();
+    const map = await new Promise((res, rej) => {
+      const out = new Map(), st = db.transaction('photos', 'readonly').objectStore('photos').openCursor();
+      st.onsuccess = () => { const c = st.result; if(c){ out.set(String(c.key), c.value); c.continue(); } else res(out); };
+      st.onerror = () => rej(st.error);
+    });
+    db.close();
+    map.forEach((v, id) => { const o = OPT_INDEX[id]; if(o && !o.photo && cleanPhoto(v)) o.photo = v; photoSaved.set(id, v); });
+  })().catch(() => {});
+  photosReady.then(() => {
+    savePhotos();   // migre les anciennes photos restées dans localStorage
+    if(typeof adm !== 'undefined' && !document.getElementById('adminOverlay').hidden && adm.view === 'list') renderAdminList();
+  });
+}
+
+let catalogue = loadCatalogue();
+rebuildIndex();
+loadPhotos();
+
+/* =====================================================
+   SYNCHRONISATION SUPABASE DE LA GAMME
+   Table `configurateur_catalogue` (une seule ligne id=1, colonne jsonb `data`, compteur `version`).
+   - Les appareils affichent d'abord leur copie locale (fonctionne hors ligne), puis se mettent à jour.
+   - Les modifications du menu réservé sont envoyées avec contrôle de version (pas d'écrasement silencieux).
+===================================================== */
+const REMOTE_KEY = 'bm_configurateur_remote_v1';
+const sync = { on: supaOn(), version: 0, dirty: false, state: 'idle', at: null, pushing: false, again: false, timer: null, pending: null, lastPull: 0, remoteEmpty: false };
+try{ const r = JSON.parse(localStorage.getItem(REMOTE_KEY) || 'null'); if(r){ sync.version = Number(r.version) || 0; sync.dirty = !!r.dirty; } }catch(e){}
+function syncMeta(){ try{ localStorage.setItem(REMOTE_KEY, JSON.stringify({ version: sync.version, dirty: sync.dirty })); }catch(e){} }
+function restCall(path, opt){
+  opt = opt || {};
+  return fetch(SUPABASE_URL.replace(/\/+$/, '') + '/rest/v1/' + path, Object.assign({}, opt, {
+    headers: Object.assign({ apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': 'application/json' }, opt.headers || {})
+  }));
+}
+const photoReplacer = (k, v) => k === 'photo' && typeof v === 'string' && v.startsWith('data:') ? undefined : v;
+function remoteDoc(){ return JSON.parse(JSON.stringify(catalogue, photoReplacer)); }
+
+function syncLabel(){
+  if(!sync.on) return '';
+  return { ok: '● En ligne · v' + sync.version, busy: 'Synchronisation…', dirty: 'Envoi en cours…', offline: 'Hors ligne · modifications gardées sur cet appareil', idle: '' }[sync.state] || '';
+}
+function setSync(state){
+  sync.state = state;
+  const chip = document.getElementById('syncChip');
+  if(chip){
+    chip.hidden = !sync.on || !syncLabel();
+    chip.textContent = syncLabel();
+    chip.classList.toggle('ok', state === 'ok'); chip.classList.toggle('off', state === 'offline');
+  }
+  const line = document.getElementById('syncLine');
+  if(line) line.textContent = syncDetail();
+}
+function syncDetail(){
+  if(!sync.on) return '';
+  if(sync.state === 'offline') return "Hors ligne : les modifications sont gardées sur cet appareil et seront envoyées dès que la connexion revient.";
+  if(sync.remoteEmpty && sync.version === 0) return "Aucune gamme en ligne pour l'instant : utilisez « Publier la gamme de cet appareil ».";
+  const d = sync.at ? new Date(sync.at).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' }) : '';
+  return 'Gamme partagée en ligne (version ' + sync.version + (d ? ', mise à jour le ' + d : '') + ').' + (sync.dirty ? ' Des modifications restent à envoyer.' : '');
+}
+
+function cacheLocal(){ try{ localStorage.setItem(CATALOGUE_KEY, JSON.stringify(catalogue, photoReplacer)); }catch(e){} }
+
+// Remplace la gamme locale par celle du serveur (sans la renvoyer)
+function applyRemote(row, force){
+  const c = sanitizeCatalogue(row.data);
+  if(!c) return false;
+  const enCours = document.getElementById('step1').style.display === 'none';
+  if(enCours && !force){ sync.pending = row; return false; }
+  // photos restées sur l'appareil (pas encore envoyées) : on les garde tant que le serveur n'en a pas
+  const locales = {};
+  Object.keys(OPT_INDEX).forEach(k => { if((OPT_INDEX[k].photo || '').startsWith('data:')) locales[k] = OPT_INDEX[k].photo; });
+  catalogue = c; rebuildIndex();
+  Object.keys(locales).forEach(k => { if(OPT_INDEX[k] && !OPT_INDEX[k].photo) OPT_INDEX[k].photo = locales[k]; });
+  sync.version = row.version; sync.dirty = false; sync.at = row.updated_at; sync.pending = null; syncMeta();
+  cacheLocal(); savePhotos();
+  // relier le devis en cours à la nouvelle gamme
+  if(state.modele){
+    const m = getModele(state.modele.id);
+    if(!m || !m.actif){ state.modele = null; state.options = {}; }
+    else { state.modele = m; Object.keys(state.options).forEach(id => { if(!OPT_INDEX[id] || !m.options.includes(id)) delete state.options[id]; }); }
+  }
+  if(typeof renderFamilles === 'function' && document.getElementById('step1').style.display !== 'none') renderFamilles();
+  return true;
+}
+
+async function syncPull(force){
+  if(!sync.on) return;
+  sync.lastPull = Date.now();
+  if(sync.dirty && !force){ syncPush(); return; }
+  setSync('busy');
+  try{
+    const r = await restCall('configurateur_catalogue?id=eq.1&select=data,version,updated_at');
+    if(!r.ok) throw new Error('http ' + r.status);
+    const rows = await r.json();
+    if(!rows.length){ sync.remoteEmpty = true; setSync('ok'); return; }
+    sync.remoteEmpty = false;
+    const row = rows[0]; sync.at = row.updated_at;
+    if(row.version !== sync.version || force) applyRemote(row, force);
+    setSync('ok');
+  }catch(e){ setSync('offline'); }
+  refreshAdminIfOpen();
+}
+
+function scheduleRemotePush(){
+  if(!sync.on) return;
+  sync.dirty = true; syncMeta(); setSync('dirty');
+  clearTimeout(sync.timer); sync.timer = setTimeout(() => syncPush(), 700);
+}
+
+async function syncPush(overrideVersion){
+  if(!sync.on) return;
+  if(sync.pushing){ sync.again = true; return; }
+  clearTimeout(sync.timer); sync.pushing = true; setSync('dirty');
+  try{
+    const doc = remoteDoc(), base = overrideVersion != null ? overrideVersion : sync.version, now = new Date().toISOString();
+    let r;
+    if(base === 0) r = await restCall('configurateur_catalogue', { method: 'POST', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ id: 1, data: doc, version: 1, updated_at: now }) });
+    else r = await restCall('configurateur_catalogue?id=eq.1&version=eq.' + base, { method: 'PATCH', headers: { Prefer: 'return=representation' }, body: JSON.stringify({ data: doc, version: base + 1, updated_at: now }) });
+    if(r.status === 409){ await syncConflict(); return; }
+    if(!r.ok) throw new Error('http ' + r.status);
+    const rows = await r.json();
+    if(!rows.length){ await syncConflict(); return; }
+    sync.version = rows[0].version; sync.at = rows[0].updated_at; sync.remoteEmpty = false; sync.dirty = false; syncMeta(); setSync('ok');
+  }catch(e){ setSync('offline'); }
+  finally{
+    sync.pushing = false;
+    if(sync.again){ sync.again = false; scheduleRemotePush(); }
+    refreshAdminIfOpen();
+  }
+}
+
+// Quelqu'un d'autre a modifié la gamme en ligne depuis notre dernière synchronisation
+async function syncConflict(){
+  let row = null;
+  try{
+    const r = await restCall('configurateur_catalogue?id=eq.1&select=data,version,updated_at');
+    const rows = r.ok ? await r.json() : []; row = rows[0] || null;
+  }catch(e){ setSync('offline'); return; }
+  const ecraser = await askConfirm("La gamme en ligne a été modifiée depuis un autre appareil. Écraser la gamme en ligne avec celle de cet appareil ? (Annuler = recharger la gamme en ligne : vos dernières modifications locales seront perdues.)", 'Écraser', 'Gamme modifiée ailleurs');
+  if(ecraser){
+    sync.pushing = false;
+    await syncPush(row ? row.version : 0);
+  } else if(row){
+    applyRemote(row, true); setSync('ok'); showToast('Gamme rechargée depuis le serveur');
+  } else { sync.version = 0; syncMeta(); setSync('ok'); }
+}
+
+function refreshAdminIfOpen(){
+  if(typeof adm === 'undefined') return;
+  const ov = document.getElementById('adminOverlay');
+  if(ov && !ov.hidden && adm.view === 'list') renderAdminList();
+}
+
+if(sync.on){
+  window.addEventListener('online', () => { if(sync.dirty) syncPush(); else syncPull(false); });
+  document.addEventListener('visibilitychange', () => { if(!document.hidden && Date.now() - sync.lastPull > 20000) syncPull(false); });
+  syncPull(false);
+}
+function getModele(id){ return catalogue.modeles.find(m => m.id === id) || null; }
+function modelesActifs(){ return catalogue.modeles.filter(m => m.actif); }
+
+function selectedOthers(o){
+  return Object.keys(state.options)
+    .filter(id => state.options[id] && id !== o.id)
+    .map(id => OPT_INDEX[id]).filter(Boolean);
+}
+
+function conflictsWith(o){
+  return selectedOthers(o).filter(s =>
+    !(o.groupe && s.groupe === o.groupe) &&   // une option du même groupe sera remplacée, pas en conflit
+    ((o.incompatibles||[]).includes(s.id) || (s.incompatibles||[]).includes(o.id))
+  );
+}
+
+function missingRequirements(o){
+  return (o.requiert||[]).filter(id => !state.options[id]).map(id => OPT_INDEX[id]).filter(Boolean);
+}
+
+function blockReason(o){
+  if(state.options[o.id]) return '';
+  const manque = missingRequirements(o);
+  if(manque.length) return 'Nécessite : ' + manque.map(x => x.nom).join(', ');
+  const conflits = conflictsWith(o);
+  if(conflits.length) return 'Incompatible avec : ' + conflits.map(x => x.nom).join(', ');
+  return '';
+}
+
+// Si on décoche une option requise, celles qui en dépendent sont décochées en cascade
+function enforceRules(){
+  let changed = true, garde = 0;
+  while(changed && garde++ < 20){
+    changed = false;
+    Object.keys(state.options).forEach(id => {
+      const o = OPT_INDEX[id];
+      if(state.options[id] && o && missingRequirements(o).length){ state.options[id] = false; changed = true; }
+    });
+  }
+}
+
+// Garde-fou avant génération du devis
+function validateConfig(){
+  const pb = [];
+  Object.keys(state.options).filter(id => state.options[id]).forEach(id => {
+    const o = OPT_INDEX[id]; if(!o) return;
+    missingRequirements(o).forEach(r => pb.push(`« ${o.nom} » nécessite « ${r.nom} »`));
+    conflictsWith(o).forEach(c => { if(o.id < c.id) pb.push(`« ${o.nom} » est incompatible avec « ${c.nom} »`); });
+  });
+  return pb;
+}
+
+// ---------- ETAPE 1 ----------
+function renderFamilles(){
+  const c = document.getElementById('famillesContainer');
+  const actifs = modelesActifs();
+  if(!actifs.length){
+    c.innerHTML = '<div class="card empty-state">Aucun modèle disponible pour le moment.</div>';
+    return;
+  }
+  c.innerHTML = catalogue.familles.map(fam => {
+    const ms = actifs.filter(m => m.famille === fam);
+    if(!ms.length) return '';
+    return `
+    <h2 class="famille-title titre-condensed">${esc(fam)}</h2>
+    <div class="modeles-grid">
+      ${ms.map(m => `
+        <div class="modele-card ${state.modele && state.modele.id===m.id ? 'selected':''}" onclick="selectModele('${esc(m.id)}')">
+          <h3>${esc(m.nom)}</h3>
+          <p>${esc(m.desc)}</p>
+          <div class="prix-label">À partir de</div><div class="base-price">${fmt(m.prixBase)}<small>HT</small></div>
+        </div>
+      `).join('')}
+    </div>`;
+  }).join('');
+}
+
+function selectModele(id){
+  const found = getModele(id);
+  if(!found) return;
+  state.modele = found;
+  state.options = {};
+  state.quantites = {};
+  // pré-cocher les options par défaut (parmi celles disponibles pour ce modèle)
+  categoriesOf(found).forEach(catKey=>{
+    const pris = new Set();
+    getVisibleOptions(catKey).forEach(o=>{
+      if(!o.defaut) return;
+      if(o.groupe){ if(pris.has(o.groupe)) return; pris.add(o.groupe); }   // un seul « de série » par groupe exclusif
+      state.options[o.id] = true;
+    });
+  });
+  enforceRules();
+  goToStep(2);
+}
+
+// ---------- ETAPE 2 ----------
+function renderStep2(){
+  const m = state.modele;
+  document.getElementById('modeleRecapCard').innerHTML = `
+    <div class="modele-recap">
+      <div>
+        <div class="tag">Modèle sélectionné</div>
+        <h3>${esc(m.nom)}</h3>
+        <div class="meta">${esc(m.desc)}${m.ref ? ` — Réf. ${esc(m.ref)}` : ''}</div>
+      </div>
+      <button class="btn btn-secondary" onclick="goToStep(1)">Changer</button>
+    </div>
+  `;
+  const cont = document.getElementById('categoriesContainer');
+  cont.innerHTML = categoriesOf(m).map(catKey => {
+    const cat = CATEGORIES_DEF[catKey];
+    if(getVisibleOptions(catKey).length === 0) return ''; // catégorie sans option pour ce modèle : masquée
+    return `
+      <div class="cat-block" id="cat-${catKey}">
+        <div class="cat-head" role="button" tabindex="0" onclick="openCat('${catKey}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCat('${catKey}')}">
+          <span class="cat-main">
+            <span class="cat-title">${esc(cat.nom)}<span class="cat-count" id="count-${catKey}"></span></span>
+            <span class="cat-sum" id="sum-${catKey}"></span>
+          </span>
+          <span class="cat-side"><span class="cat-price" id="cprice-${catKey}"></span><span class="chevron">›</span></span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  refreshOptionStates();
+  updateTotal();
+}
+
+// ----- Fenêtre de choix des options d'une catégorie -----
+let sheetCat = null;
+function openCat(catKey){
+  const cat = CATEGORIES_DEF[catKey]; if(!cat || !state.modele) return;
+  sheetCat = catKey;
+  document.getElementById('sheetTitle').textContent = cat.nom;
+  document.getElementById('sheetOpts').innerHTML = getVisibleOptions(catKey).map(o => renderOption(o, catKey)).join('');
+  document.getElementById('optSheet').hidden = false;
+  document.body.style.overflow = 'hidden';
+  document.querySelector('#optSheet .sheet-body').scrollTop = 0;
+  refreshOptionStates(); updateTotal();
+  setTimeout(() => { const b = document.getElementById('sheetOk'); if(b) b.focus({preventScroll:true}); }, 40);
+}
+function closeSheet(){
+  if(document.getElementById('optSheet').hidden) return;
+  document.getElementById('optSheet').hidden = true;
+  document.getElementById('sheetOpts').innerHTML = '';
+  document.body.style.overflow = '';
+  const k = sheetCat; sheetCat = null;
+  refreshOptionStates();
+  const tile = k && document.getElementById('cat-' + k);
+  if(tile && tile.scrollIntoView) tile.scrollIntoView({block:'nearest'});
+}
+document.getElementById('sheetBack').addEventListener('click', closeSheet);
+document.getElementById('sheetOk').addEventListener('click', closeSheet);
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !document.getElementById('photoBox').hidden){ closePhoto(); return; }
+  if(e.key === 'Escape' && !document.getElementById('optSheet').hidden && document.getElementById('adminOverlay').hidden) closeSheet();
+});
+
+function renderOption(o, catKey){
+  const checked = !!state.options[o.id];
+  const inputType = o.groupe ? 'radio' : 'checkbox';
+  const name = esc(o.groupe ? `grp-${catKey}-${o.groupe}` : `opt-${o.id}`);
+  return `
+    <label class="opt-row ${checked?'on':''}" data-opt="${esc(o.id)}" data-grp="${esc(o.groupe||'')}">
+      <div class="opt-left">
+        <input type="${inputType}" name="${name}" ${checked?'checked':''} onchange="toggleOption(this)">
+        <span class="opt-ctrl ${o.groupe?'radio':'check'}"></span>
+        ${o.photo ? `<button type="button" class="opt-photo" onclick="showPhoto('${esc(o.id)}',event)" aria-label="Agrandir la photo : ${esc(o.nom)}"><img src="${esc(o.photo)}" alt="" loading="lazy" decoding="async"></button>` : ''}
+        <div>
+          <div class="opt-name">${esc(o.nom)}</div>
+          ${o.desc ? `<div class="opt-desc">${esc(o.desc)}</div>` : ''}
+          ${o.ref ? `<div class="opt-ref">Réf. ${esc(o.ref)}</div>` : ''}
+          <div class="opt-block"></div>
+        </div>
+      </div>
+      ${o.video ? `<button type="button" class="opt-video" onclick="openVideo('${esc(o.id)}',event)" aria-label="Voir la vidéo : ${esc(o.nom)}" title="Voir la vidéo"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="6.5" width="13" height="11" rx="2.5"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/></svg></button>` : ''}
+      <div class="opt-price ${optPrix(o)===0?'incl':''}">${optPrix(o)===0 ? 'Inclus' : '+ '+fmt(optPrix(o))}</div>
+    </label>
+  `;
+}
+
+function openVideo(id, ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  const o = OPT_INDEX[id], url = o && cleanVideo(o.video); if(!url) return;
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+function showPhoto(id, ev){
+  if(ev){ ev.preventDefault(); ev.stopPropagation(); }
+  const o = OPT_INDEX[id]; if(!o || !o.photo) return;
+  document.getElementById('photoScroll').classList.remove('zoom');
+  document.getElementById('photoImg').src = o.photo;
+  document.getElementById('photoCap').textContent = o.nom;
+  document.getElementById('photoBox').hidden = false;
+}
+document.getElementById('photoImg').addEventListener('click', () => document.getElementById('photoScroll').classList.toggle('zoom'));
+function closePhoto(){ document.getElementById('photoScroll').classList.remove('zoom'); document.getElementById('photoBox').hidden = true; document.getElementById('photoImg').removeAttribute('src'); }
+document.getElementById('photoClose').addEventListener('click', closePhoto);
+document.getElementById('photoBox').addEventListener('click', e => { if(e.target.id === 'photoBox') closePhoto(); });
+
+function toggleOption(el){
+  const row = el.closest('.opt-row');
+  const o = row && OPT_INDEX[row.dataset.opt];
+  if(!o) return;
+  if(o.groupe){
+    // radio : décocher les autres options du même groupe (dans la même catégorie)
+    const cat = catOf(o);
+    (cat ? cat.options : []).forEach(x=>{
+      if(x.groupe===o.groupe) state.options[x.id] = false;
+    });
+    state.options[o.id] = true;
+  } else {
+    state.options[o.id] = el.checked;
+  }
+  enforceRules();
+  refreshOptionStates();
+  updateTotal();
+}
+
+function refreshOptionStates(){
+  document.querySelectorAll('label.opt-row').forEach(row=>{
+    const o = OPT_INDEX[row.dataset.opt];
+    const on = !!state.options[row.dataset.opt];
+    const motif = o ? blockReason(o) : '';
+    row.classList.toggle('on', on);
+    row.classList.toggle('off', !!motif);
+    const input = row.querySelector('input');
+    if(input){ input.checked = on; input.disabled = !!motif; }
+    const zone = row.querySelector('.opt-block');
+    if(zone) zone.textContent = motif;
+  });
+  if(!state.modele) return;
+  categoriesOf(state.modele).forEach(catKey=>{
+    const badge = document.getElementById('count-'+catKey);
+    if(!badge) return;
+    const n = getVisibleOptions(catKey).filter(o=>state.options[o.id] && optPrix(o)>0).length;
+    badge.textContent = n;
+    badge.classList.toggle('visible', n>0);
+    const chosen = getVisibleOptions(catKey).filter(o=>state.options[o.id]);
+    const sum = chosen.reduce((s,o)=>s+optPrix(o),0);
+    const sEl = document.getElementById('sum-'+catKey), pEl = document.getElementById('cprice-'+catKey), blk = document.getElementById('cat-'+catKey);
+    if(sEl) sEl.textContent = chosen.length ? chosen.map(o=>o.nom).join(' · ') : 'Aucune option choisie';
+    if(pEl) pEl.textContent = sum>0 ? '+ '+fmt(sum) : '';
+    if(blk) blk.classList.toggle('has', chosen.length>0);
+  });
+}
+
+function getSelectedOptions(){
+  const list = [];
+  if(!state.modele) return list;
+  categoriesOf(state.modele).forEach(catKey=>{
+    getVisibleOptions(catKey).forEach(o=>{
+      if(state.options[o.id] && optPrix(o)>0) list.push(o);
+    });
+  });
+  return list;
+}
+
+function round2(n){ return Math.round((n + Number.EPSILON) * 100) / 100; }
+
+function parseNum(v){
+  const n = parseFloat(String(v).replace(',', '.'));
+  return isFinite(n) ? n : 0;
+}
+
+// Remises : chacune bornée à 0-100 %, appliquées en cascade sur matériel + options (la 2e porte sur le montant déjà remisé).
+// Transport : >= 0, ajouté après remises.
+function computeTotals(){
+  if(!state.modele) return {base:0, opts:0, sousTotal:0, remisePct:0, remise2Pct:0, remise1:0, remise2:0, remise:0, remiseEffPct:0, transport:0, total:0};
+  const base = state.modele.prixBase;
+  const opts = getSelectedOptions().reduce((s,o)=>s+optPrix(o),0);
+  const sousTotal = base + opts;
+  const remisePct = state.remisePct || 0;
+  const remise2Pct = state.remise2Pct || 0;
+  const remise1 = round2(sousTotal * remisePct / 100);
+  const remise2 = round2((sousTotal - remise1) * remise2Pct / 100);
+  const remise = round2(remise1 + remise2);
+  const remiseEffPct = sousTotal > 0 ? round2(remise / sousTotal * 100) : 0;
+  const transport = state.transport || 0;
+  return {base, opts, sousTotal, remisePct, remise2Pct, remise1, remise2, remise, remiseEffPct, transport, total: round2(sousTotal - remise + transport)};
+}
+
+function computeTotal(){ return computeTotals().total; }
+
+// Toutes les options choisies (payantes ET incluses de série), dans l'ordre des catégories : sert au récap et au PDF.
+// Les totaux, eux, ne reposent que sur getSelectedOptions() (options payantes).
+function getSelectedAll(){
+  const list = [];
+  if(!state.modele) return list;
+  categoriesOf(state.modele).forEach(catKey=>{
+    getVisibleOptions(catKey).forEach(o=>{
+      if(state.options[o.id]) list.push(o);
+    });
+  });
+  return list;
+}
+
+function onConditionsChange(fin){
+  const rEl = document.getElementById('remisePct');
+  const r2El = document.getElementById('remisePct2');
+  const tEl = document.getElementById('fraisTransport');
+  const r = Math.min(100, Math.max(0, parseNum(rEl.value)));
+  const r2 = Math.min(100, Math.max(0, parseNum(r2El.value)));
+  const t = Math.max(0, parseNum(tEl.value));
+  state.remisePct = r;
+  state.remise2Pct = r2;
+  state.transport = t;
+  if(fin === true){   // à la fin de la saisie : ramener les champs à la valeur réellement appliquée
+    if(rEl.value !== '') rEl.value = r;
+    if(r2El.value !== '') r2El.value = r2;
+    if(tEl.value !== '') tEl.value = t;
+  }
+  updateTotal();
+}
+
+function updateTotal(){
+  document.getElementById('footerTotal').textContent = fmt(computeTotal());
+  const st = document.getElementById('sheetTotal'); if(st) st.textContent = fmt(computeTotal());
+  if(document.getElementById('step3').style.display !== 'none'){
+    renderRecap();
+  }
+}
+
+// ---------- SIGNATURE ----------
+let sigCtx = null, sigDrawing = false, sigHasStroke = false, sigLastPos = null;
+
+function initSignatureCanvas(){
+  const canvas = document.getElementById('sigCanvas');
+  if(!canvas || canvas.dataset.init) { resizeSignatureCanvas(); return; }
+  canvas.dataset.init = '1';
+  sigCtx = canvas.getContext('2d');
+  resizeSignatureCanvas();
+
+  function getPos(e){
+    const rect = canvas.getBoundingClientRect();
+    const point = e.touches ? e.touches[0] : e;
+    return { x: point.clientX - rect.left, y: point.clientY - rect.top };
+  }
+  function start(e){
+    e.preventDefault();
+    sigDrawing = true;
+    sigLastPos = getPos(e);
+  }
+  function move(e){
+    if(!sigDrawing) return;
+    e.preventDefault();
+    const pos = getPos(e);
+    sigCtx.strokeStyle = '#2b2f36';
+    sigCtx.lineWidth = 2.2;
+    sigCtx.lineCap = 'round';
+    sigCtx.lineJoin = 'round';
+    sigCtx.beginPath();
+    sigCtx.moveTo(sigLastPos.x, sigLastPos.y);
+    sigCtx.lineTo(pos.x, pos.y);
+    sigCtx.stroke();
+    sigLastPos = pos;
+    if(!sigHasStroke){
+      sigHasStroke = true;
+      document.getElementById('sigPlaceholder').style.display = 'none';
+      document.getElementById('sigStatus').textContent = 'Signature enregistrée';
+      document.getElementById('sigStatus').style.color = 'var(--vert)';
+    }
+  }
+  function end(){ sigDrawing = false; }
+
+  canvas.addEventListener('mousedown', start);
+  canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  canvas.addEventListener('touchstart', start, {passive:false});
+  canvas.addEventListener('touchmove', move, {passive:false});
+  canvas.addEventListener('touchend', end);
+}
+
+function resizeSignatureCanvas(){
+  const canvas = document.getElementById('sigCanvas');
+  if(!canvas) return;
+  const wrap = canvas.parentElement;
+  const ratio = window.devicePixelRatio || 1;
+  canvas.width = wrap.clientWidth * ratio;
+  canvas.height = wrap.clientHeight * ratio;
+  if(sigCtx) sigCtx.scale(ratio, ratio);
+}
+
+function clearSignature(){
+  const canvas = document.getElementById('sigCanvas');
+  if(!canvas || !sigCtx) return;
+  sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+  sigHasStroke = false;
+  document.getElementById('sigPlaceholder').style.display = 'block';
+  document.getElementById('sigStatus').textContent = 'Aucune signature';
+  document.getElementById('sigStatus').style.color = '#8a8f98';
+}
+
+function getSignatureDataUrl(){
+  const canvas = document.getElementById('sigCanvas');
+  if(!canvas || !sigHasStroke) return null;
+  return canvas.toDataURL('image/png');
+}
+
+// ---------- ETAPE 3 ----------
+function renderRecap(){
+  const m = state.modele;
+  const opts = getSelectedAll();
+  let html = `<div class="recap-line base"><span>${esc(m.nom)} (modèle de base)${m.ref ? ` <small class="ref">${esc(m.ref)}</small>` : ''}</span><span>${fmt(m.prixBase)}</span></div>`;
+  opts.forEach(o=>{
+    html += `<div class="recap-line"><span>${esc(o.nom)}${o.ref ? ` <small class="ref">${esc(o.ref)}</small>` : ''}</span>${optPrix(o) > 0 ? `<span>+ ${fmt(optPrix(o))}</span>` : `<span class="incl">Inclus</span>`}</div>`;
+  });
+  const T = computeTotals();
+  if(T.remise > 0 || T.transport > 0){
+    html += `<div class="recap-line base"><span>Sous-total matériel et options</span><span>${fmt(T.sousTotal)}</span></div>`;
+    if(T.remise1 > 0) html += `<div class="recap-line"><span>Remise ${fmtPct(T.remisePct)} %</span><span>- ${fmt(T.remise1)}</span></div>`;
+    if(T.remise2 > 0) html += `<div class="recap-line"><span>Remise supplémentaire ${fmtPct(T.remise2Pct)} %</span><span>- ${fmt(T.remise2)}</span></div>`;
+    if(T.remise1 > 0 && T.remise2 > 0) html += `<div class="recap-note">Soit ${fmtPct(T.remiseEffPct)} % de remise cumulée</div>`;
+    if(T.transport > 0) html += `<div class="recap-line"><span>Frais de transport</span><span>+ ${fmt(T.transport)}</span></div>`;
+  }
+  html += `<div class="recap-line total"><span>Total HT</span><span>${fmt(T.total)}</span></div>`;
+  document.getElementById('recapLines').innerHTML = html;
+}
+
+// ---------- NAVIGATION ----------
+function goToStep(n){
+  if(typeof closeSheet === 'function') closeSheet();
+  [1,2,3].forEach(i=>{
+    document.getElementById('step'+i).style.display = (i===n)?'block':'none';
+    const pill = document.getElementById('pill-'+i);
+    pill.classList.remove('active','done');
+    if(i===n) pill.classList.add('active');
+    else if(i<n) pill.classList.add('done');
+  });
+  if(n===1){ if(sync.pending) applyRemote(sync.pending, true); renderFamilles(); }
+  if(n===2){
+    if(!state.modele){ goToStep(1); return; }
+    renderStep2();
+  }
+  if(n===3){
+    renderRecap();
+    requestAnimationFrame(initSignatureCanvas);
+  }
+  renderFooterActions(n);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderFooterActions(n){
+  const c = document.getElementById('footerActions');
+  if(n===1){
+    c.innerHTML = `<button class="btn btn-primary" ${!state.modele?'disabled':''} onclick="goToStep(2)">Continuer</button>`;
+  } else if(n===2){
+    c.innerHTML = `
+      <button class="btn btn-secondary" onclick="goToStep(1)">Retour</button>
+      <button class="btn btn-primary" onclick="goToStep(3)">Continuer</button>
+    `;
+  } else if(n===3){
+    c.innerHTML = `
+      <button class="btn btn-secondary" onclick="goToStep(2)">Retour</button>
+      <button class="btn btn-primary" onclick="genererPDF()">Générer le devis PDF</button>
+    `;
+  }
+}
+
+function resetConfig(){
+  state = { modele:null, options:{}, quantites:{}, remisePct:0, remise2Pct:0, transport:0 };
+  ['cliNom','cliContact','cliTel','cliEmail','cliAdresse','cliNotes','remisePct','remisePct2','fraisTransport','cliSignataire'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  goToStep(1);
+}
+
+function fmtPct(n){ return String(n).replace('.', ','); }
+
+function fmt(n){
+  return n.toLocaleString('fr-FR', {minimumFractionDigits: Number.isInteger(n) ? 0 : 2, maximumFractionDigits: 2}) + ' €';
+}
+
+// ---------- PDF ----------
+function genererPDF(){
+  if(!state.modele){ alert('Sélectionnez un modèle avant de générer le devis.'); return; }
+  const incoherences = validateConfig();
+  if(incoherences.length){
+    alert('Configuration incohérente, corrigez les options avant de générer le devis :\n- ' + incoherences.join('\n- '));
+    return;
+  }
+  const cliSignataire = document.getElementById('cliSignataire').value.trim();
+  const sigData = getSignatureDataUrl();
+  if(!cliSignataire || !sigData){
+    alert("Merci de renseigner le nom du signataire et de faire signer le client avant de générer le devis.");
+    return;
+  }
+  const { jsPDF } = window.jspdf || {};
+  if(!jsPDF){ alert("La librairie PDF n'a pas pu se charger."); return; }
+  const doc = new jsPDF();
+  const m = state.modele;
+  const opts = getSelectedAll();
+  const cliNom = document.getElementById('cliNom').value || '—';
+  const cliContact = document.getElementById('cliContact').value || '';
+  const cliTel = document.getElementById('cliTel').value || '';
+  const cliEmail = document.getElementById('cliEmail').value || '';
+  const cliAdresse = document.getElementById('cliAdresse').value || '';
+  const cliNotes = document.getElementById('cliNotes').value || '';
+
+  const money = n => fmt(n).replace(/[\u202f\u00a0]/g,' ').replace('€','EUR');
+  // Bandeau d'en-tête
+  doc.setFillColor(43,47,54); doc.rect(0,0,210,34,'F');
+  doc.setFillColor(200,16,46); doc.rect(0,34,210,2.2,'F');
+  doc.setFont('helvetica','bold'); doc.setFontSize(20); doc.setTextColor(255,255,255);
+  doc.text('BENNES MAUPU', 15, 18);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(200,203,208);
+  doc.text('Devis commercial - configuration personnalisee', 15, 26);
+  doc.setFontSize(9.5); doc.setTextColor(255,255,255);
+  doc.text('Le ' + new Date().toLocaleDateString('fr-FR'), 195, 18, {align:'right'});
+  doc.setTextColor(30,30,30);
+  let y = 36;
+  y += 16;
+  doc.setFontSize(12); doc.setTextColor(30,30,30); doc.setFont('helvetica','bold');
+  doc.text('Client', 15, y);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5);
+  y += 7;
+  [['Société', cliNom], ['Contact', cliContact], ['Téléphone', cliTel], ['E-mail', cliEmail], ['Adresse', cliAdresse]]
+    .forEach(([label,val])=>{ if(val){ doc.text(`${label} : ${val}`, 15, y); y+=6; } });
+
+  y += 6;
+  doc.setFont('helvetica','bold'); doc.setFontSize(12); doc.setTextColor(30,30,30);
+  doc.text('Configuration', 15, y);
+  y += 8;
+
+  // Tableau : Réf. | Désignation | Prix HT (retours à la ligne et saut de page gérés)
+  const COL_REF = 17, COL_DES = 60, COL_PRIX = 180;
+  const tableHeader = () => {
+    doc.setFillColor(243,244,246); doc.rect(15, y - 5, 180, 8, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(90,94,102);
+    doc.text('RÉF.', COL_REF, y);
+    doc.text('DÉSIGNATION', COL_DES, y);
+    doc.text('PRIX HT', COL_PRIX, y, {align:'right'});
+    doc.setTextColor(30,30,30);
+    y += 8;
+  };
+  const row = (ref, nom, prixTxt, desc, gras) => {
+    doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    const refL = doc.splitTextToSize(ref || '—', 40);
+    doc.setFont('helvetica', gras ? 'bold' : 'normal'); doc.setFontSize(10);
+    const nomL = doc.splitTextToSize(nom, 93);
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5);
+    const descL = desc ? doc.splitTextToSize(desc, 93) : [];
+    const est = Math.max((refL.length - 1) * 3.9,
+                         (nomL.length - 1) * 4.1 + (descL.length ? 4.2 + (descL.length - 1) * 3.5 : 0)) + 7;
+    if(y + est > 268){ doc.addPage(); y = 20; tableHeader(); }
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(70,74,82);
+    doc.text(refL, COL_REF, y);
+    doc.setFont('helvetica', gras ? 'bold' : 'normal'); doc.setFontSize(10); doc.setTextColor(30,30,30);
+    doc.text(nomL, COL_DES, y);
+    if(prixTxt === 'Inclus') doc.setTextColor(31,157,85);
+    doc.text(prixTxt, COL_PRIX, y, {align:'right'});
+    doc.setTextColor(30,30,30);
+    let last = y + (nomL.length - 1) * 4.1;
+    if(descL.length){
+      const dy = last + 4.2;
+      doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor(110,110,110);
+      doc.text(descL, COL_DES, dy);
+      doc.setTextColor(30,30,30);
+      last = dy + (descL.length - 1) * 3.5;
+    }
+    y = Math.max(last, y + (refL.length - 1) * 3.9) + 6.6;
+    doc.setDrawColor(235,236,239); doc.line(15, y - 4.2, 195, y - 4.2);
+  };
+  tableHeader();
+  row(m.ref, m.nom, money(m.prixBase), m.desc, true);
+  opts.forEach(o => row(o.ref, o.nom, optPrix(o) > 0 ? '+ ' + money(optPrix(o)) : 'Inclus', '', false));
+
+  const T = computeTotals();
+  if(y > 235){ doc.addPage(); y = 20; }
+  y += 4;
+  doc.setDrawColor(220,220,220); doc.line(15,y,195,y);
+  y += 8;
+  if(T.remise > 0 || T.transport > 0){
+    doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
+    doc.text('Sous-total matériel et options', 15, y); doc.text(money(T.sousTotal), 180, y, {align:'right'}); y += 6;
+    if(T.remise1 > 0){ doc.text('Remise ' + fmtPct(T.remisePct) + ' %', 15, y); doc.text('- ' + money(T.remise1), 180, y, {align:'right'}); y += 6; }
+    if(T.remise2 > 0){ doc.text('Remise supplémentaire ' + fmtPct(T.remise2Pct) + ' %', 15, y); doc.text('- ' + money(T.remise2), 180, y, {align:'right'}); y += 6; }
+    if(T.remise1 > 0 && T.remise2 > 0){
+      doc.setFontSize(9); doc.setTextColor(110,110,110);
+      doc.text('Soit ' + fmtPct(T.remiseEffPct) + ' % de remise cumulée', 15, y); y += 6;
+      doc.setFontSize(10.5); doc.setTextColor(30,30,30);
+    }
+    if(T.transport > 0){ doc.text('Frais de transport', 15, y); doc.text('+ ' + money(T.transport), 180, y, {align:'right'}); y += 6; }
+    y += 3;
+  }
+  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(200,16,46);
+  doc.text('TOTAL HT', 15, y);
+  doc.text(money(T.total), 180, y, {align:'right'});
+  doc.setTextColor(30,30,30);
+
+  if(cliNotes){
+    y += 14;
+    doc.setFont('helvetica','bold'); doc.setFontSize(10.5);
+    doc.text('Remarques', 15, y);
+    y += 6;
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.5);
+    const lines = doc.splitTextToSize(cliNotes, 180);
+    doc.text(lines, 15, y);
+    y += lines.length * 5;
+  }
+
+  // Signature client
+  y += 14;
+  if(y > 230){ doc.addPage(); y = 20; }
+  doc.setDrawColor(220,220,220); doc.line(15,y,195,y);
+  y += 8;
+  doc.setFont('helvetica','bold'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
+  doc.text('Bon pour accord — signature client', 15, y);
+  y += 4;
+  try{
+    doc.addImage(sigData, 'PNG', 15, y, 70, 32);
+  }catch(e){}
+  doc.setFont('helvetica','normal'); doc.setFontSize(9.5);
+  doc.text('Signé par : ' + cliSignataire, 15, y + 38);
+  const dateSignature = new Date().toLocaleDateString('fr-FR');
+  doc.text('Date : ' + dateSignature, 15, y + 44);
+
+  doc.setFontSize(8); doc.setTextColor(150,150,150);
+  doc.text('Devis indicatif — prix HT, à confirmer avant commande. © Bennes Maupu', 15, 287);
+
+  doc.save(`devis-${m.nom.replace(/\s+/g,'_')}-${cliNom.replace(/\s+/g,'_')||'client'}.pdf`);
+}
+
+/* =====================================================
+   MENU RÉSERVÉ : administration de la gamme
+   Ouverture : 5 appuis rapides sur le carré « BM » (logo) de l'en-tête, puis code d'accès.
+   ATTENTION : la vérification du code se fait dans le navigateur. C'est une barrière contre
+   l'accès par curiosité, pas une vraie sécurité : elle sera remplacée par les comptes Supabase
+   (rôle « responsable ») quand la base sera branchée.
+===================================================== */
+// Empreinte SHA-256 de « bm-cfg|<code> ». Code par défaut : maupu-admin (À CHANGER).
+// Pour un nouveau code : menu réservé > « Code d'accès », puis coller l'empreinte ici.
+const ADMIN_CODE_HASH = 'd5a7e33a97b858c0e95129aa3f749d4f31e724dc609f312f129bc2576104acf5';
+
+const $ = id => document.getElementById(id);
+
+async function adminHash(code){
+  if(!(window.crypto && window.crypto.subtle)) throw new Error('crypto indisponible');
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('bm-cfg|' + code));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ---------- Toast et confirmation ----------
+let _toastTimer = null;
+function showToast(msg, isErr){
+  const t = $('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' err' : '');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove('show'), isErr ? 5000 : 2600);
+}
+
+function askConfirm(message, okLabel, title){
+  return new Promise(resolve => {
+    $('confirmTitle').textContent = title || 'Confirmation';
+    $('confirmMsg').textContent = message;
+    $('confirmOk').textContent = okLabel || 'Confirmer';
+    $('confirmModal').hidden = false;
+    const done = v => {
+      $('confirmModal').hidden = true;
+      $('confirmOk').onclick = null; $('confirmCancel').onclick = null;
+      resolve(v);
+    };
+    $('confirmOk').onclick = () => done(true);
+    $('confirmCancel').onclick = () => done(false);
+  });
+}
+
+function askText(title, value, okLabel){
+  return new Promise(resolve => {
+    $('textTitle').textContent = title;
+    $('textOk').textContent = okLabel || 'Valider';
+    $('textInput').value = value || ''; $('textErr').textContent = '';
+    $('textModal').hidden = false;
+    setTimeout(() => { $('textInput').focus(); $('textInput').select(); }, 30);
+    const done = v => {
+      $('textModal').hidden = true;
+      $('textOk').onclick = null; $('textCancel').onclick = null; $('textInput').onkeydown = null;
+      resolve(v);
+    };
+    $('textOk').onclick = () => {
+      const v = $('textInput').value.trim();
+      if(!v){ $('textErr').textContent = 'Le nom est obligatoire.'; return; }
+      done(v);
+    };
+    $('textCancel').onclick = () => done(null);
+    $('textInput').onkeydown = e => { if(e.key === 'Enter') $('textOk').click(); else if(e.key === 'Escape') $('textCancel').click(); };
+  });
+}
+
+function persist(){
+  if(!saveCatalogue()) showToast("Enregistrement impossible sur cet appareil (navigation privée ?). Les changements seront perdus à la fermeture.", true);
+}
+
+// ---------- Accès caché + code ----------
+let _taps = [], _pinFails = 0, _pinLockUntil = 0;
+
+$('brandMark').addEventListener('click', () => {
+  const now = Date.now();
+  _taps = _taps.filter(t => now - t < 3000);
+  _taps.push(now);
+  if(_taps.length >= 5){ _taps = []; openPin(); }
+});
+
+function openPin(){
+  $('pinInput').value = ''; $('pinErr').textContent = '';
+  $('pinModal').hidden = false;
+  setTimeout(() => $('pinInput').focus(), 30);
+}
+function closePin(){ $('pinModal').hidden = true; $('pinInput').value = ''; }
+
+async function submitPin(){
+  const now = Date.now();
+  if(now < _pinLockUntil){
+    $('pinErr').textContent = 'Trop d\'essais. Réessayez dans ' + Math.ceil((_pinLockUntil - now) / 1000) + ' s.';
+    return;
+  }
+  let h;
+  try{ h = await adminHash($('pinInput').value); }
+  catch(e){ $('pinErr').textContent = 'Navigateur non compatible (contexte non sécurisé).'; return; }
+  if(h === ADMIN_CODE_HASH){ _pinFails = 0; closePin(); openAdmin(); return; }
+  _pinFails++;
+  $('pinInput').value = '';
+  if(_pinFails >= 5){ _pinFails = 0; _pinLockUntil = Date.now() + 60000; $('pinErr').textContent = 'Trop d\'essais. Réessayez dans 60 s.'; }
+  else $('pinErr').textContent = 'Code incorrect.';
+}
+
+$('pinOk').addEventListener('click', submitPin);
+$('pinCancel').addEventListener('click', closePin);
+$('pinInput').addEventListener('keydown', e => { if(e.key === 'Enter') submitPin(); if(e.key === 'Escape') closePin(); });
+
+// ---------- Ouverture / fermeture du menu ----------
+const adm = { tab: 'models', view: 'list', draft: null, isNew: false, snapshot: '', sel: new Set() };
+
+function openAdmin(){
+  adm.tab = 'models';
+  if(sync.on){ state.modele = null; state.options = {}; goToStep(1); syncPull(false); setSync(sync.state); }
+  $('adminOverlay').hidden = false;
+  document.body.style.overflow = 'hidden';
+  $('adminOverlay').scrollTop = 0;
+  renderAdminList();
+}
+
+async function closeAdmin(){
+  if((adm.view === 'edit' || adm.view === 'oedit') && adminDirty()){
+    if(!await askConfirm(adm.view === 'edit' ? 'Fermer sans enregistrer les modifications de ce modèle ?' : 'Fermer sans enregistrer les modifications de cette option ?', 'Fermer sans enregistrer')) return;
+  }
+  if(sync.on && sync.dirty) syncPush();
+  $('adminOverlay').hidden = true;
+  $('adminBody').innerHTML = '';
+  document.body.style.overflow = '';
+  adm.view = 'list'; adm.draft = null;
+  state.modele = null; state.options = {};   // la gamme a pu changer : on repart de l'étape 1
+  goToStep(1);
+}
+$('adminClose').addEventListener('click', closeAdmin);
+
+// ---------- Liste des modèles ----------
+function adminTabsHTML(){
+  return `<div class="adm-tabs" role="tablist">
+    <button type="button" class="adm-tab ${adm.tab === 'models' ? 'on' : ''}" data-act="tab" data-tab="models" role="tab">Modèles</button>
+    <button type="button" class="adm-tab ${adm.tab === 'options' ? 'on' : ''}" data-act="tab" data-tab="options" role="tab">Options</button>
+  </div>`;
+}
+
+function renderAdminList(){
+  adm.view = 'list'; adm.draft = null;
+  $('adminBody').innerHTML = adminTabsHTML() + (adm.tab === 'options' ? optionsListHTML() : modelsListHTML()) + adminToolsHTML();
+}
+
+function modelsListHTML(){
+  let html = `
+    <div class="adm-head">
+      <div><h2 class="titre-condensed">Modèles de la gamme</h2></div>
+      <button type="button" class="btn btn-primary" data-act="new">+ Nouveau modèle</button>
+    </div>
+    <div class="adm-note">Les modifications sont enregistrées sur <strong>cet appareil</strong>. En attendant la base de données partagée, utilisez « Exporter » / « Importer » pour sauvegarder la gamme ou la transférer.</div>`;
+
+  if(!catalogue.modeles.length) html += '<div class="card empty-state">Aucun modèle. Créez le premier avec « Nouveau modèle ».</div>';
+
+  catalogue.familles.forEach((fam, fi) => {
+    const ms = catalogue.modeles.filter(m => m.famille === fam);
+    if(!ms.length) return;
+    html += `<div class="adm-fam-head"><span>${esc(fam)}</span><span class="adm-count">${ms.length}</span>
+      <span class="adm-arrows">
+        <button type="button" class="btn-sm" data-act="famup" data-i="${fi}" ${fi === 0 ? 'disabled' : ''} title="Monter la famille">▲</button>
+        <button type="button" class="btn-sm" data-act="famdown" data-i="${fi}" ${fi === catalogue.familles.length - 1 ? 'disabled' : ''} title="Descendre la famille">▼</button>
+      </span></div>`;
+    ms.forEach((m, mi) => {
+      html += `
+      <div class="adm-model ${m.actif ? '' : 'off'}" data-id="${esc(m.id)}">
+        <div class="adm-model-main">
+          <div class="adm-model-name">${esc(m.nom)} ${m.actif ? '' : '<span class="adm-badge">Archivé</span>'}</div>
+          <div class="adm-model-meta">${esc(m.ref) || 'Sans référence'} · ${fmt(m.prixBase)} HT · ${m.options.length} option${m.options.length > 1 ? 's' : ''}</div>
+        </div>
+        <div class="adm-actions">
+          <button type="button" class="btn-sm" data-act="up" data-id="${esc(m.id)}" ${mi === 0 ? 'disabled' : ''} title="Monter">▲</button>
+          <button type="button" class="btn-sm" data-act="down" data-id="${esc(m.id)}" ${mi === ms.length - 1 ? 'disabled' : ''} title="Descendre">▼</button>
+          <button type="button" class="btn-sm" data-act="edit" data-id="${esc(m.id)}">Modifier</button>
+          <button type="button" class="btn-sm" data-act="dup" data-id="${esc(m.id)}">Dupliquer</button>
+          <button type="button" class="btn-sm" data-act="toggle" data-id="${esc(m.id)}">${m.actif ? 'Archiver' : 'Réactiver'}</button>
+          <button type="button" class="btn-sm danger" data-act="delete" data-id="${esc(m.id)}">Supprimer</button>
+        </div>
+      </div>`;
+    });
+  });
+
+  return html;
+}
+
+function adminToolsHTML(){
+  return `
+    <div class="card" style="margin-top:26px">
+      <h3>Sauvegarde de la gamme</h3>
+      ${sync.on ? `<p class="adm-sync" id="syncLine">${esc(syncDetail())}</p>` : ''}
+      <div class="adm-tools">
+        ${sync.on ? '<button type="button" class="btn-sm" data-act="syncpull">Recharger depuis le serveur</button><button type="button" class="btn-sm" data-act="syncpush">Publier la gamme de cet appareil</button>' : ''}
+        <button type="button" class="btn-sm" data-act="export">Exporter (fichier .json)</button>
+        <button type="button" class="btn-sm" data-act="import">Importer un fichier</button>
+        ${supaOn() && Object.keys(OPT_INDEX).some(k => (OPT_INDEX[k].photo || '').startsWith('data:')) ? '<button type="button" class="btn-sm" data-act="migphotos">Envoyer les photos locales vers Supabase</button>' : ''}
+        <button type="button" class="btn-sm danger" data-act="reset">Revenir à la gamme d'exemple</button>
+      </div>
+      <input type="file" id="importFile" accept="application/json,.json" hidden>
+    </div>
+    <div class="card">
+      <h3>Code d'accès</h3>
+      <p class="hint" style="margin-top:0">Génère l'empreinte d'un nouveau code. Copiez-la dans <code>ADMIN_CODE_HASH</code> au début de la partie « MENU RÉSERVÉ » du fichier index.html.</p>
+      <div class="adm-hash">
+        <input type="text" id="newCode" class="champ" placeholder="Nouveau code" autocomplete="off">
+        <button type="button" class="btn-sm" data-act="hash">Générer l'empreinte</button>
+      </div>
+      <code class="adm-code" id="hashOut" hidden></code>
+    </div>`;
+}
+
+function adminMoveModel(id, dir){
+  const m = getModele(id); if(!m) return;
+  const idxs = catalogue.modeles.map((x, i) => x.famille === m.famille ? i : -1).filter(i => i >= 0);
+  const pos = idxs.findIndex(i => catalogue.modeles[i].id === id), j = pos + dir;
+  if(j < 0 || j >= idxs.length) return;
+  const a = idxs[pos], b = idxs[j];
+  [catalogue.modeles[a], catalogue.modeles[b]] = [catalogue.modeles[b], catalogue.modeles[a]];
+  persist(); renderAdminList();
+}
+
+function adminMoveFamille(i, dir){
+  const j = i + dir;
+  if(j < 0 || j >= catalogue.familles.length) return;
+  [catalogue.familles[i], catalogue.familles[j]] = [catalogue.familles[j], catalogue.familles[i]];
+  persist(); renderAdminList();
+}
+
+async function adminDelete(id){
+  const m = getModele(id); if(!m) return;
+  if(!await askConfirm(`Supprimer définitivement le modèle « ${m.nom} » ? Pour le retirer sans le perdre, utilisez plutôt « Archiver ».`, 'Supprimer', 'Supprimer le modèle')) return;
+  catalogue.modeles = catalogue.modeles.filter(x => x.id !== id);
+  persist(); renderAdminList(); showToast('Modèle supprimé');
+}
+
+function adminToggle(id){
+  const m = getModele(id); if(!m) return;
+  m.actif = !m.actif;
+  persist(); renderAdminList();
+  showToast(m.actif ? 'Modèle réactivé : visible par les commerciaux' : 'Modèle archivé : masqué pour les commerciaux');
+}
+
+// ---------- Éditeur de modèle ----------
+function adminNew(){
+  adm.draft = { id: newId(), famille: catalogue.familles[0] || '', ref: '', nom: '', desc: '', prixBase: 0, actif: true, options: [], prixOptions: {} };
+  adm.isNew = true; openEditor();
+}
+function adminEdit(id){
+  const m = getModele(id); if(!m) return;
+  adm.draft = clone(m); adm.isNew = false; openEditor();
+}
+function adminDup(id){
+  const m = getModele(id); if(!m) return;
+  const d = clone(m);
+  d.id = newId(); d.nom = m.nom + ' (copie)'; d.ref = ''; d.actif = false;   // brouillon : non visible tant qu'on ne l'active pas
+  adm.draft = d; adm.isNew = true; openEditor();
+}
+
+function namesOf(set){
+  return Object.keys(OPT_INDEX).filter(id => set.has(id)).map(id => OPT_INDEX[id].nom);
+}
+function incompatSet(o){
+  const s = new Set(o.incompatibles || []);
+  Object.keys(OPT_INDEX).forEach(k => { if((OPT_INDEX[k].incompatibles || []).includes(o.id)) s.add(k); });
+  s.delete(o.id);
+  return s;
+}
+function optTagsHTML(o){
+  const tags = [];
+  if(o.groupe) tags.push(`<span class="adm-tag">Choix exclusif : ${esc(o.groupe)}</span>`);
+  if(o.defaut) tags.push('<span class="adm-tag">De série</span>');
+  if(o.video) tags.push('<span class="adm-tag">Vidéo</span>');
+  const rq = namesOf(new Set(o.requiert || [])), ic = namesOf(incompatSet(o));
+  if(rq.length) tags.push(`<span class="adm-tag req">Nécessite : ${esc(rq.join(', '))}</span>`);
+  if(ic.length) tags.push(`<span class="adm-tag inc">Incompatible : ${esc(ic.join(', '))}</span>`);
+  return tags.length ? `<div class="adm-opt-tags">${tags.join('')}</div>` : '';
+}
+
+function openEditor(){
+  adm.view = 'edit';
+  const d = adm.draft;
+  adm.sel = new Set(d.options);
+  const fams = catalogue.familles.slice();
+  if(d.famille && !fams.includes(d.famille)) fams.push(d.famille);
+  const famSel = fams.includes(d.famille) ? d.famille : (fams.length ? fams[0] : '__new__');
+
+  let cats = '';
+  Object.keys(CATEGORIES_DEF).forEach(k => {
+    const cat = CATEGORIES_DEF[k];
+    if(!cat.options.length) return;
+    cats += `
+    <div class="adm-cat" data-cat="${k}">
+      <div class="adm-cat-head">
+        <span>${esc(cat.nom)}</span>
+        <span class="adm-cat-right">
+          <button type="button" class="btn-sm" data-act="catall" data-cat="${k}">Tout</button>
+          <button type="button" class="btn-sm" data-act="catnone" data-cat="${k}">Aucun</button>
+          <span class="adm-cat-count" data-catcount="${k}"></span>
+        </span>
+      </div>
+      ${cat.options.map(o => `
+        <label class="adm-opt" data-id="${esc(o.id)}" data-search="${esc((o.nom + ' ' + (o.ref || '')).toLowerCase())}">
+          <input type="checkbox" ${adm.sel.has(o.id) ? 'checked' : ''}>
+          <span class="adm-opt-main">
+            <span><span class="adm-opt-name">${esc(o.nom)}</span><span class="adm-opt-ref">${esc(o.ref || '—')}</span></span>
+            ${optTagsHTML(o)}
+          </span>
+          <span class="adm-opt-price">${optPrix(o, d) > 0 ? '+ ' + fmt(optPrix(o, d)) : 'Inclus'}</span>
+        </label>`).join('')}
+    </div>`;
+  });
+
+  $('adminBody').innerHTML = `
+    <div class="adm-head"><div><h2 class="titre-condensed">${adm.isNew ? 'Nouveau modèle' : 'Modifier le modèle'}</h2></div></div>
+    <div id="fErrors" class="adm-fields-err" hidden></div>
+    <div class="card">
+      <h3>Informations</h3>
+      <div class="form-grid">
+        <label>Famille
+          <select id="fFamille" class="champ">
+            ${fams.map(f => `<option value="${esc(f)}" ${f === famSel ? 'selected' : ''}>${esc(f)}</option>`).join('')}
+            <option value="__new__" ${famSel === '__new__' ? 'selected' : ''}>+ Nouvelle famille…</option>
+          </select>
+        </label>
+        <label id="fNewFamWrap" ${famSel === '__new__' ? '' : 'hidden'}>Nom de la nouvelle famille
+          <input type="text" id="fNewFam" class="champ" value="${famSel === '__new__' ? esc(d.famille) : ''}" placeholder="Ex : Bennes TP">
+        </label>
+        <label>Nom du modèle <input type="text" id="fNom" class="champ" value="${esc(d.nom)}" placeholder="Ex : 9132 EVO 40"></label>
+        <label>Référence <input type="text" id="fRef" class="champ" value="${esc(d.ref)}" placeholder="Ex : BM-9132-EVO40"></label>
+        <label class="full">Description <textarea id="fDesc" class="champ" rows="2" placeholder="Courte description affichée au commercial">${esc(d.desc)}</textarea></label>
+        <label>Prix de base (€ HT) <input type="number" id="fPrix" class="champ" inputmode="decimal" min="0" step="1" value="${isFinite(d.prixBase) ? d.prixBase : ''}"></label>
+      </div>
+      <label class="adm-switch"><input type="checkbox" id="fActif" ${d.actif ? 'checked' : ''}> Visible par les commerciaux</label>
+    </div>
+    <div class="card">
+      <h3>Options disponibles sur ce modèle <span class="cat-count visible" id="fCount" style="margin-left:6px">0</span></h3>
+      <input type="text" id="fFilter" class="champ" style="width:100%" placeholder="Filtrer les options (nom ou référence)" autocomplete="off">
+      <div class="adm-quick">
+        <button type="button" class="btn-sm" data-act="allopts">Tout cocher</button>
+        <button type="button" class="btn-sm" data-act="noneopts">Tout décocher</button>
+      </div>
+      <div id="fOptions">${cats}</div>
+    </div>
+    <div id="fWarnings" class="adm-warn" hidden></div>
+    <div class="adm-save-row">
+      <button type="button" class="btn btn-secondary" data-act="cancel">Annuler</button>
+      <button type="button" class="btn btn-primary" data-act="save">Enregistrer</button>
+    </div>`;
+  $('adminOverlay').scrollTop = 0;
+  readDraft();
+  adm.snapshot = JSON.stringify(adm.draft);
+  updateEditorStatus();
+}
+
+// Lit le formulaire dans adm.draft
+function readDraft(){
+  const d = adm.draft, sel = $('fFamille').value;
+  d.famille = sel === '__new__' ? $('fNewFam').value.trim() : sel;
+  d.nom = $('fNom').value.trim();
+  d.ref = $('fRef').value.trim();
+  d.desc = $('fDesc').value.trim();
+  const p = $('fPrix').value;
+  d.prixBase = p === '' ? NaN : Number(p);
+  d.actif = $('fActif').checked;
+  d.options = Object.keys(OPT_INDEX).filter(id => adm.sel.has(id));
+}
+
+function adminDirty(){
+  if(!adm.draft) return false;
+  if(adm.view === 'edit' && $('fNom')){ readDraft(); return JSON.stringify(adm.draft) !== adm.snapshot; }
+  if(adm.view === 'oedit' && $('oNom')){ readODraft(); return JSON.stringify(adm.draft) !== adm.snapshot; }
+  return false;
+}
+
+function adminWarnings(d){
+  const w = [], sel = new Set(d.options);
+  if(!sel.size) w.push('Aucune option sélectionnée : le commercial ne pourra rien configurer sur ce modèle.');
+  sel.forEach(id => {
+    const o = OPT_INDEX[id]; if(!o) return;
+    (o.requiert || []).forEach(r => {
+      if(!sel.has(r)) w.push(`« ${o.nom} » nécessite « ${OPT_INDEX[r] ? OPT_INDEX[r].nom : r} », qui n'est pas disponible sur ce modèle : elle ne pourra jamais être choisie.`);
+    });
+  });
+  const defauts = d.options.map(id => OPT_INDEX[id]).filter(o => o && o.defaut);
+  defauts.forEach((a, i) => defauts.slice(i + 1).forEach(b => {
+    if((a.incompatibles || []).includes(b.id) || (b.incompatibles || []).includes(a.id))
+      w.push(`« ${a.nom} » et « ${b.nom} » sont toutes deux de série mais incompatibles entre elles.`);
+  }));
+  if(d.ref){
+    const autre = catalogue.modeles.find(m => m.id !== d.id && m.ref && m.ref.toLowerCase() === d.ref.toLowerCase());
+    if(autre) w.push(`La référence « ${d.ref} » est déjà utilisée par le modèle « ${autre.nom} ».`);
+  }
+  if(d.nom && d.famille){
+    const dup = catalogue.modeles.find(m => m.id !== d.id && m.famille === d.famille && m.nom.toLowerCase() === d.nom.toLowerCase());
+    if(dup) w.push(`Un modèle « ${d.nom} » existe déjà dans la famille « ${d.famille} ».`);
+  }
+  return w;
+}
+
+function adminErrors(d){
+  const e = [];
+  if(!d.famille) e.push([$('fFamille').value === '__new__' ? 'fNewFam' : 'fFamille', 'Choisissez une famille ou donnez un nom à la nouvelle famille.']);
+  if(!d.nom) e.push(['fNom', 'Le nom du modèle est obligatoire.']);
+  if(!isFinite(d.prixBase) || d.prixBase < 0) e.push(['fPrix', 'Indiquez un prix de base valide (0 ou plus).']);
+  return e;
+}
+
+function updateEditorStatus(){
+  if(adm.view !== 'edit' || !$('fCount')) return;
+  readDraft();
+  $('fCount').textContent = adm.sel.size;
+  document.querySelectorAll('#fOptions [data-catcount]').forEach(el => {
+    const k = el.dataset.catcount, opts = CATEGORIES_DEF[k].options;
+    el.textContent = opts.filter(o => adm.sel.has(o.id)).length + '/' + opts.length;
+  });
+  const w = adminWarnings(adm.draft), box = $('fWarnings');
+  box.hidden = !w.length;
+  box.innerHTML = w.length ? `<strong>À vérifier</strong> (vous pouvez enregistrer malgré tout)<ul>${w.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+}
+
+function applyFilter(){
+  const q = $('fFilter').value.trim().toLowerCase();
+  document.querySelectorAll('#fOptions .adm-cat').forEach(cat => {
+    let shown = 0;
+    cat.querySelectorAll('.adm-opt').forEach(row => {
+      const ok = !q || row.dataset.search.includes(q);
+      row.hidden = !ok; if(ok) shown++;
+    });
+    cat.hidden = shown === 0;
+  });
+}
+
+function setCategory(k, on){
+  CATEGORIES_DEF[k].options.forEach(o => {
+    if(on) adm.sel.add(o.id); else adm.sel.delete(o.id);
+    const row = document.querySelector(`#fOptions .adm-opt[data-id="${o.id}"] input`);
+    if(row) row.checked = on;
+  });
+  updateEditorStatus();
+}
+
+function setAllOptions(on){ Object.keys(CATEGORIES_DEF).forEach(k => setCategory(k, on)); }
+
+async function adminCancel(){
+  if(adminDirty() && !await askConfirm(adm.view === 'oedit' ? 'Abandonner les modifications de cette option ?' : 'Abandonner les modifications de ce modèle ?', 'Abandonner')) return;
+  renderAdminList();
+}
+
+function adminSave(){
+  readDraft();
+  const d = adm.draft, errs = adminErrors(d);
+  document.querySelectorAll('#adminBody .champ.invalid').forEach(el => el.classList.remove('invalid'));
+  const box = $('fErrors');
+  if(errs.length){
+    errs.forEach(([id]) => { const el = $(id); if(el) el.classList.add('invalid'); });
+    box.hidden = false; box.innerHTML = errs.map(([, m]) => esc(m)).join('<br>');
+    $('adminOverlay').scrollTop = 0;
+    return;
+  }
+  box.hidden = true;
+  d.prixBase = round2(d.prixBase);
+  d.prixOptions = Object.fromEntries(Object.entries(d.prixOptions || {}).filter(([k]) => d.options.includes(k)));
+  if(adm.isNew) catalogue.modeles.push(clone(d));
+  else catalogue.modeles = catalogue.modeles.map(m => m.id === d.id ? clone(d) : m);
+  if(!catalogue.familles.includes(d.famille)) catalogue.familles.push(d.famille);
+  persist();
+  showToast(adm.isNew ? 'Modèle créé' : 'Modèle enregistré');
+  renderAdminList();
+}
+
+
+/* =====================================================
+   ONGLET « OPTIONS » : catégories, options, règles, modèles concernés
+===================================================== */
+function usageCount(id){ return catalogue.modeles.filter(m => m.options.includes(id)).length; }
+
+// Remet les options des modèles dans l'ordre du catalogue et retire les inconnues, puis enregistre
+function commitCatalogue(){
+  rebuildIndex();
+  const order = Object.keys(OPT_INDEX);
+  catalogue.modeles.forEach(m => {
+    const s = new Set(m.options); m.options = order.filter(id => s.has(id));
+    m.prixOptions = Object.fromEntries(Object.entries(m.prixOptions || {}).filter(([k, v]) => s.has(k) && OPT_INDEX[k] && typeof v === 'number' && isFinite(v) && v >= 0));
+  });
+  persist();
+}
+
+function optionsListHTML(){
+  let html = `
+    <div class="adm-head">
+      <div><h2 class="titre-condensed">Options de la gamme</h2></div>
+      <div class="adm-actions">
+        <button type="button" class="btn-sm" data-act="catnew">+ Catégorie</button>
+        <button type="button" class="btn btn-primary" data-act="onew">+ Nouvelle option</button>
+      </div>
+    </div>
+    <div class="adm-note">Chaque option se règle ici : prix, référence, règles, et <strong>modèles sur lesquels elle est proposée</strong>. Le prix d'une option est le même sur tous les modèles. Les modifications sont enregistrées sur <strong>cet appareil</strong> (utilisez « Exporter » pour sauvegarder).</div>`;
+  const cats = catalogue.categories;
+  if(!cats.length) html += '<div class="card empty-state">Aucune catégorie. Créez-en une avec « + Catégorie ».</div>';
+  cats.forEach((cat, ci) => {
+    html += `<div class="adm-fam-head"><span>${esc(cat.nom)}</span><span class="adm-count">${cat.options.length}</span>
+      <span class="adm-arrows">
+        <button type="button" class="btn-sm" data-act="catup" data-cat="${esc(cat.id)}" ${ci === 0 ? 'disabled' : ''} title="Monter la catégorie">▲</button>
+        <button type="button" class="btn-sm" data-act="catdown" data-cat="${esc(cat.id)}" ${ci === cats.length - 1 ? 'disabled' : ''} title="Descendre la catégorie">▼</button>
+        <button type="button" class="btn-sm" data-act="catren" data-cat="${esc(cat.id)}">Renommer</button>
+        <button type="button" class="btn-sm danger" data-act="catdel" data-cat="${esc(cat.id)}" ${cat.options.length ? 'disabled title="Videz ou déplacez d\'abord ses options"' : ''}>Supprimer</button>
+      </span></div>`;
+    if(!cat.options.length) html += '<div class="adm-note" style="background:#f6f6f7;border-color:var(--gris-bordure);color:var(--gris-texte)">Catégorie vide (masquée pour les commerciaux).</div>';
+    cat.options.forEach((o, oi) => {
+      const n = usageCount(o.id);
+      html += `
+      <div class="adm-model" data-id="${esc(o.id)}">
+        ${o.photo ? `<img class="adm-thumb" src="${esc(o.photo)}" alt="" loading="lazy" decoding="async">` : ''}
+        <div class="adm-model-main">
+          <div class="adm-model-name">${esc(o.nom)} ${n ? '' : '<span class="adm-badge">Aucun modèle</span>'}</div>
+          <div class="adm-model-meta">${esc(o.ref) || 'Sans référence'} · ${o.prix > 0 ? '+ ' + fmt(o.prix) + ' HT' : 'Inclus'}${catalogue.modeles.some(m => m.options.includes(o.id) && m.prixOptions && o.id in m.prixOptions) ? ' <span class="adm-tag">prix variable selon modèle</span>' : ''} · ${n} modèle${n > 1 ? 's' : ''}</div>
+          ${optTagsHTML(o)}
+        </div>
+        <div class="adm-actions">
+          <button type="button" class="btn-sm" data-act="oup" data-id="${esc(o.id)}" ${oi === 0 ? 'disabled' : ''} title="Monter">▲</button>
+          <button type="button" class="btn-sm" data-act="odown" data-id="${esc(o.id)}" ${oi === cat.options.length - 1 ? 'disabled' : ''} title="Descendre">▼</button>
+          <button type="button" class="btn-sm" data-act="oedit" data-id="${esc(o.id)}">Modifier</button>
+          <button type="button" class="btn-sm" data-act="odup" data-id="${esc(o.id)}">Dupliquer</button>
+          <button type="button" class="btn-sm danger" data-act="odel" data-id="${esc(o.id)}">Supprimer</button>
+        </div>
+      </div>`;
+    });
+  });
+  return html;
+}
+
+// ---------- catégories ----------
+async function adminCatNew(){
+  const nom = await askText('Nouvelle catégorie', '', 'Créer');
+  if(!nom) return;
+  catalogue.categories.push({ id: newCatId(nom), nom, options: [] });
+  commitCatalogue(); renderAdminList(); showToast('Catégorie créée');
+}
+async function adminCatRename(k){
+  const c = CATEGORIES_DEF[k]; if(!c) return;
+  const nom = await askText('Renommer la catégorie', c.nom, 'Renommer');
+  if(!nom) return;
+  c.nom = nom; commitCatalogue(); renderAdminList();
+}
+function adminCatMove(k, dir){
+  const i = catalogue.categories.findIndex(c => c.id === k), j = i + dir;
+  if(i < 0 || j < 0 || j >= catalogue.categories.length) return;
+  [catalogue.categories[i], catalogue.categories[j]] = [catalogue.categories[j], catalogue.categories[i]];
+  commitCatalogue(); renderAdminList();
+}
+async function adminCatDelete(k){
+  const c = CATEGORIES_DEF[k]; if(!c || c.options.length) return;
+  if(!await askConfirm(`Supprimer la catégorie vide « ${c.nom} » ?`, 'Supprimer', 'Supprimer la catégorie')) return;
+  catalogue.categories = catalogue.categories.filter(x => x.id !== k);
+  commitCatalogue(); renderAdminList(); showToast('Catégorie supprimée');
+}
+
+// ---------- ordre / suppression / copie ----------
+function adminOMove(id, dir){
+  const o = OPT_INDEX[id], cat = o && catOf(o); if(!cat) return;
+  const i = cat.options.indexOf(o), j = i + dir;
+  if(j < 0 || j >= cat.options.length) return;
+  [cat.options[i], cat.options[j]] = [cat.options[j], cat.options[i]];
+  commitCatalogue(); renderAdminList();
+}
+
+async function adminODelete(id){
+  const o = OPT_INDEX[id]; if(!o) return;
+  const n = usageCount(id);
+  const liees = Object.keys(OPT_INDEX).filter(k => k !== id && ((OPT_INDEX[k].requiert || []).includes(id) || (OPT_INDEX[k].incompatibles || []).includes(id)));
+  let msg = `Supprimer définitivement l'option « ${o.nom} » ?`;
+  if(n) msg += ` Elle sera retirée de ${n} modèle${n > 1 ? 's' : ''}.`;
+  if(liees.length) msg += ` Les règles des options suivantes qui la mentionnent seront mises à jour : ${liees.map(k => OPT_INDEX[k].nom).join(', ')}.`;
+  if(!await askConfirm(msg, 'Supprimer', "Supprimer l'option")) return;
+  catalogue.categories.forEach(c => { c.options = c.options.filter(x => x.id !== id); });
+  catalogue.modeles.forEach(m => { m.options = m.options.filter(x => x !== id); });
+  catalogue.categories.forEach(c => c.options.forEach(x => {
+    x.requiert = (x.requiert || []).filter(r => r !== id);
+    x.incompatibles = (x.incompatibles || []).filter(r => r !== id);
+  }));
+  commitCatalogue(); renderAdminList(); showToast('Option supprimée');
+}
+
+// ---------- éditeur d'option ----------
+function canonOpt(arr){ const s = new Set(arr); return Object.keys(OPT_INDEX).filter(id => s.has(id)); }
+function canonMod(arr){ const s = new Set(arr); return catalogue.modeles.map(m => m.id).filter(id => s.has(id)); }
+
+function adminONew(){
+  adm.draft = { id: null, cat: catalogue.categories.length ? catalogue.categories[0].id : '__new__', newCat: '', nom: '', ref: '', desc: '', prix: 0, groupe: '', defaut: false, photo: '', video: '', requiert: [], incompatibles: [], modeles: [], prixModeles: {} };
+  adm.isNew = true; openOptionEditor();
+}
+function adminOEdit(id){
+  const o = OPT_INDEX[id]; if(!o) return;
+  adm.draft = { id: o.id, cat: catOf(o).id, newCat: '', nom: o.nom, ref: o.ref || '', desc: o.desc || '', prix: o.prix, groupe: o.groupe || '', defaut: !!o.defaut, photo: o.photo || '', video: o.video || '',
+    requiert: canonOpt(o.requiert || []), incompatibles: canonOpt([...incompatSet(o)]),
+    modeles: catalogue.modeles.filter(m => m.options.includes(o.id)).map(m => m.id),
+    prixModeles: Object.fromEntries(catalogue.modeles.filter(m => m.options.includes(o.id) && m.prixOptions && o.id in m.prixOptions).map(m => [m.id, m.prixOptions[o.id]])) };
+  adm.isNew = false; openOptionEditor();
+}
+function adminODup(id){
+  const o = OPT_INDEX[id]; if(!o) return;
+  adm.draft = { id: null, cat: catOf(o).id, newCat: '', nom: o.nom + ' (copie)', ref: '', desc: o.desc || '', prix: o.prix, groupe: o.groupe || '', defaut: false, photo: o.photo || '', video: o.video || '',
+    requiert: canonOpt(o.requiert || []), incompatibles: canonOpt([...incompatSet(o)]),
+    modeles: catalogue.modeles.filter(m => m.options.includes(o.id)).map(m => m.id),
+    prixModeles: Object.fromEntries(catalogue.modeles.filter(m => m.options.includes(o.id) && m.prixOptions && o.id in m.prixOptions).map(m => [m.id, m.prixOptions[o.id]])) };
+  adm.isNew = true; openOptionEditor();
+}
+
+function pickerHTML(kind, selected, excludeId){
+  return catalogue.categories.map(cat => {
+    const opts = cat.options.filter(o => o.id !== excludeId);
+    if(!opts.length) return '';
+    return `<div class="adm-cat"><div class="adm-cat-head"><span>${esc(cat.nom)}</span></div>${opts.map(o => `
+      <label class="adm-pick" data-kind="${kind}" data-id="${esc(o.id)}" data-search="${esc((o.nom + ' ' + (o.ref || '')).toLowerCase())}">
+        <input type="checkbox" ${selected.includes(o.id) ? 'checked' : ''}>
+        <span class="adm-opt-main"><span><span class="adm-opt-name">${esc(o.nom)}</span><span class="adm-opt-ref">${esc(o.ref || '—')}</span></span></span>
+        <span class="adm-opt-price">${o.prix > 0 ? '+ ' + fmt(o.prix) : 'Inclus'}</span>
+      </label>`).join('')}</div>`;
+  }).join('');
+}
+function modelPickerHTML(selected, prixModeles){
+  return catalogue.familles.map(f => {
+    const ms = catalogue.modeles.filter(m => m.famille === f);
+    if(!ms.length) return '';
+    return `<div class="adm-cat"><div class="adm-cat-head"><span>${esc(f)}</span></div>${ms.map(m => `
+      <label class="adm-pick" data-kind="m" data-id="${esc(m.id)}" data-search="${esc((m.nom + ' ' + (m.ref || '')).toLowerCase())}">
+        <input type="checkbox" ${selected.includes(m.id) ? 'checked' : ''}>
+        <span class="adm-opt-main"><span><span class="adm-opt-name">${esc(m.nom)}</span><span class="adm-opt-ref">${esc(m.ref || '—')}</span>${m.actif ? '' : ' <span class="adm-badge">Archivé</span>'}</span></span>
+        <input type="number" class="champ adm-mprix" data-mprix="${esc(m.id)}" min="0" step="1" inputmode="decimal" placeholder="prix général" title="Prix particulier sur ce modèle (vide = prix général)" value="${prixModeles && m.id in prixModeles ? prixModeles[m.id] : ''}" ${selected.includes(m.id) ? '' : 'disabled'}>
+      </label>`).join('')}</div>`;
+  }).join('');
+}
+
+function openOptionEditor(){
+  adm.view = 'oedit';
+  const d = adm.draft, cats = catalogue.categories;
+  const catSel = cats.some(c => c.id === d.cat) ? d.cat : '__new__';
+  $('adminBody').innerHTML = `
+    <div class="adm-head"><div><h2 class="titre-condensed">${adm.isNew ? 'Nouvelle option' : "Modifier l'option"}</h2></div></div>
+    <div id="oErrors" class="adm-fields-err" hidden></div>
+    <div class="card">
+      <h3>Informations</h3>
+      <div class="form-grid">
+        <label>Catégorie
+          <select id="oCat" class="champ">
+            ${cats.map(c => `<option value="${esc(c.id)}" ${c.id === catSel ? 'selected' : ''}>${esc(c.nom)}</option>`).join('')}
+            <option value="__new__" ${catSel === '__new__' ? 'selected' : ''}>+ Nouvelle catégorie…</option>
+          </select>
+        </label>
+        <label id="oNewCatWrap" ${catSel === '__new__' ? '' : 'hidden'}>Nom de la nouvelle catégorie
+          <input type="text" id="oNewCat" class="champ" value="${esc(d.newCat)}" placeholder="Ex : Pneumatiques">
+        </label>
+        <label>Nom de l'option <input type="text" id="oNom" class="champ" value="${esc(d.nom)}" placeholder="Ex : Suspension pneumatique"></label>
+        <label>Référence <input type="text" id="oRef" class="champ" value="${esc(d.ref)}" placeholder="Ex : CH-SPNE"></label>
+        <label class="full">Description <textarea id="oDesc" class="champ" rows="2" placeholder="Courte description affichée au commercial">${esc(d.desc)}</textarea></label>
+        <label>Prix (€ HT) <input type="number" id="oPrix" class="champ" inputmode="decimal" min="0" step="1" value="${isFinite(d.prix) ? d.prix : ''}"></label>
+        <label>Choix exclusif (groupe) <input type="text" id="oGroupe" class="champ" list="oGroups" value="${esc(d.groupe)}" placeholder="Laisser vide = case à cocher"></label>
+      </div>
+      <datalist id="oGroups"></datalist>
+      <p class="adm-pickhint" style="margin-top:12px">Prix à 0 = « Inclus ». Pour que le commercial ne puisse en choisir qu'<strong>une seule</strong> parmi plusieurs options (ex. 2 ou 3 essieux), donnez le même nom de groupe à ces options dans la même catégorie.</p>
+      <label class="adm-switch"><input type="checkbox" id="oDefaut" ${d.defaut ? 'checked' : ''}> De série (pré-cochée à la création d'un devis)</label>
+    </div>
+    <div class="card">
+      <h3>Photo de l'option</h3>
+      <p class="adm-pickhint">Montre la fonctionnalité au commercial (affichée à côté de l'option, agrandissable). L'image est conservée en pleine qualité (JPEG, PNG ou WebP, 20 Mo maximum).</p>
+      <div class="adm-photo">
+        <div class="adm-photo-prev" id="oPhotoPrev"></div>
+        <div class="adm-actions">
+          <input type="file" id="oPhotoFile" accept="image/*" hidden>
+          <button type="button" class="btn-sm" data-act="ophoto">Choisir une photo</button>
+          <button type="button" class="btn-sm danger" data-act="ophotodel" id="oPhotoDel">Retirer</button>
+        </div>
+      </div>
+      <div class="modal-err" id="oPhotoErr"></div>
+      <p class="adm-pickhint" style="margin:14px 0 6px">Lien vidéo (facultatif) : une icône caméra apparaîtra sur l'option et ouvrira ce lien dans un nouvel onglet.</p>
+      <input type="url" id="oVideo" class="champ" style="width:100%" value="${esc(d.video)}" placeholder="https://www.youtube.com/watch?v=…" autocomplete="off">
+    </div>
+    <div class="card">
+      <h3>Nécessite <span class="cat-count visible" id="oCountR" style="margin-left:6px">0</span></h3>
+      <p class="adm-pickhint">Cette option ne peut être choisie que si toutes celles cochées ci-dessous le sont aussi.</p>
+      <input type="text" class="champ" style="width:100%" data-filter="pickR" placeholder="Filtrer (nom ou référence)" autocomplete="off">
+      <div class="adm-picklist" id="pickR">${pickerHTML('r', d.requiert, d.id) || '<div class="adm-pickhint">Aucune autre option.</div>'}</div>
+    </div>
+    <div class="card">
+      <h3>Incompatible avec <span class="cat-count visible" id="oCountI" style="margin-left:6px">0</span></h3>
+      <p class="adm-pickhint">Choisir l'une de ces options bloque celle-ci (et inversement).</p>
+      <input type="text" class="champ" style="width:100%" data-filter="pickI" placeholder="Filtrer (nom ou référence)" autocomplete="off">
+      <div class="adm-picklist" id="pickI">${pickerHTML('i', d.incompatibles, d.id) || '<div class="adm-pickhint">Aucune autre option.</div>'}</div>
+    </div>
+    <div class="card">
+      <h3>Disponible sur ces modèles <span class="cat-count visible" id="oCountM" style="margin-left:6px">0</span></h3>
+      <p class="adm-pickhint">Pour un prix différent sur un modèle, renseignez-le dans la case à droite (laisser vide = prix général ci-dessus).</p>
+      <div class="adm-quick">
+        <button type="button" class="btn-sm" data-act="mall">Tous</button>
+        <button type="button" class="btn-sm" data-act="mnone">Aucun</button>
+      </div>
+      <div class="adm-picklist" id="pickM">${modelPickerHTML(d.modeles, d.prixModeles) || '<div class="adm-pickhint">Aucun modèle.</div>'}</div>
+    </div>
+    <div id="oWarnings" class="adm-warn" hidden></div>
+    <div class="adm-save-row">
+      <button type="button" class="btn btn-secondary" data-act="ocancel">Annuler</button>
+      <button type="button" class="btn btn-primary" data-act="osave">Enregistrer</button>
+    </div>`;
+  $('adminOverlay').scrollTop = 0;
+  readODraft();
+  renderOPhoto();
+  adm.snapshot = JSON.stringify(adm.draft);
+  updateOStatus();
+}
+
+function renderOPhoto(){
+  const d = adm.draft, box = $('oPhotoPrev'); if(!box) return;
+  box.innerHTML = d.photo ? `<img src="${esc(d.photo)}" alt="">` : 'Aucune photo';
+  $('oPhotoDel').hidden = !d.photo;
+}
+// Envoi d'un fichier (File ou Blob) dans le bucket Supabase ; renvoie l'URL publique
+async function supaUpload(blob){
+  const type = blob.type || 'image/jpeg';
+  const ext = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' }[type] || 'jpg';
+  const rnd = (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
+  const path = 'options/' + rnd + '.' + ext;
+  let r;
+  try{
+    r = await fetch(SUPABASE_URL.replace(/\/+$/, '') + '/storage/v1/object/' + PHOTO_BUCKET + '/' + path, {
+      method: 'POST',
+      headers: { apikey: SUPABASE_ANON_KEY, Authorization: 'Bearer ' + SUPABASE_ANON_KEY, 'Content-Type': type, 'Cache-Control': '31536000' },
+      body: blob
+    });
+  }catch(e){ const x = new Error("Envoi vers Supabase impossible (réseau). Vérifiez la connexion."); x.supa = true; throw x; }
+  if(!r.ok){ const x = new Error('Envoi vers Supabase refusé (code ' + r.status + '). Vérifiez le bucket « ' + PHOTO_BUCKET + ' » et ses règles d\'accès.'); x.supa = true; throw x; }
+  return supaPhotoPrefix() + path;
+}
+
+function readFileAsDataURL(file){
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(String(r.result)); r.onerror = () => rej(r.error);
+    r.readAsDataURL(file);
+  });
+}
+function checkImageLoads(src){
+  return new Promise((res, rej) => { const i = new Image(); i.onload = () => res(); i.onerror = () => rej(new Error('image')); i.src = src; });
+}
+async function adminPhotoPicked(file){
+  const err = $('oPhotoErr'); err.textContent = '';
+  if(!file) return;
+  if(!/^image\/(jpeg|png|webp)$/.test(file.type)){ err.textContent = 'Format non pris en charge : utilisez une image JPEG, PNG ou WebP.'; return; }
+  if(file.size > 20 * 1024 * 1024){ err.textContent = 'Image trop lourde (20 Mo maximum).'; return; }
+  try{
+    const data = await readFileAsDataURL(file);
+    if(!cleanPhoto(data)) throw new Error('bad');
+    await checkImageLoads(data);
+    if(adm.view !== 'oedit' || !adm.draft) return;
+    if(supaOn()){
+      err.textContent = 'Envoi vers Supabase…';
+      adm.draft.photo = await supaUpload(file); err.textContent = '';
+    } else adm.draft.photo = data;
+    renderOPhoto();
+  }catch(e){ err.textContent = e && e.supa ? e.message : "Impossible de lire cette image : le fichier est peut-être corrompu."; }
+}
+
+function readODraft(){
+  const d = adm.draft;
+  d.cat = $('oCat').value;
+  d.newCat = $('oNewCat').value.trim();
+  d.nom = $('oNom').value.trim();
+  d.ref = $('oRef').value.trim();
+  d.desc = $('oDesc').value.trim();
+  const p = $('oPrix').value;
+  d.prix = p === '' ? NaN : Number(p);
+  d.groupe = $('oGroupe').value.trim().slice(0, 40);
+  d.video = $('oVideo').value.trim();
+  d.defaut = $('oDefaut').checked;
+}
+
+function adminOErrors(d){
+  const e = [];
+  if(d.cat === '__new__' && !d.newCat) e.push(['oNewCat', 'Donnez un nom à la nouvelle catégorie.']);
+  if(!d.nom) e.push(['oNom', "Le nom de l'option est obligatoire."]);
+  if(!isFinite(d.prix) || d.prix < 0) e.push(['oPrix', 'Indiquez un prix valide (0 ou plus).']);
+  if(d.video && !cleanVideo(d.video)) e.push(['oVideo', 'Lien vidéo invalide : indiquez une adresse complète commençant par https://']);
+  Object.keys(d.prixModeles || {}).forEach(mid => {
+    const v = d.prixModeles[mid];
+    if(!isFinite(v) || v < 0){ const m = getModele(mid); e.push(['', 'Prix invalide sur le modèle « ' + (m ? m.nom : mid) + ' » (0 ou plus, ou laisser vide).']); }
+  });
+  return e;
+}
+
+function adminOWarnings(d){
+  const w = [], self = d.id, nm = id => OPT_INDEX[id] ? OPT_INDEX[id].nom : id;
+  const others = Object.keys(OPT_INDEX).filter(k => k !== self).map(k => OPT_INDEX[k]);
+  if(d.nom){
+    const dup = others.find(x => x.nom.toLowerCase() === d.nom.toLowerCase() && catOf(x) && catOf(x).id === d.cat);
+    if(dup) w.push(`Une option « ${d.nom} » existe déjà dans cette catégorie.`);
+  }
+  if(d.ref){
+    const dr = others.find(x => x.ref && x.ref.toLowerCase() === d.ref.toLowerCase());
+    if(dr) w.push(`La référence « ${d.ref} » est déjà utilisée par l'option « ${dr.nom} ».`);
+  }
+  d.requiert.filter(id => d.incompatibles.includes(id)).forEach(id =>
+    w.push(`« ${nm(id)} » est à la fois exigée et incompatible : cette option ne pourra jamais être choisie.`));
+  if(self){
+    const seen = new Set(), pile = d.requiert.slice();
+    let cycle = false;
+    while(pile.length && !cycle){
+      const id = pile.pop();
+      if(id === self){ cycle = true; break; }
+      if(seen.has(id)) continue;
+      seen.add(id);
+      ((OPT_INDEX[id] || {}).requiert || []).forEach(r => pile.push(r));
+    }
+    if(cycle) w.push('Boucle de dépendances : cette option est (indirectement) nécessaire à l\'une de celles dont elle dépend. Elle ne pourra jamais être choisie.');
+  }
+  if(d.defaut){
+    const nonSerie = d.requiert.filter(id => OPT_INDEX[id] && !OPT_INDEX[id].defaut);
+    if(nonSerie.length) w.push(`Cette option est de série mais nécessite des options qui ne le sont pas (${nonSerie.map(nm).join(', ')}) : elle ne sera pas pré-cochée.`);
+    others.filter(x => x.defaut && d.groupe && x.groupe === d.groupe && catOf(x) && catOf(x).id === d.cat)
+      .forEach(x => w.push(`« ${x.nom} » est aussi de série dans le groupe « ${d.groupe} » : une seule sera pré-cochée.`));
+    others.filter(x => x.defaut && d.incompatibles.includes(x.id) && !(d.groupe && x.groupe === d.groupe))
+      .forEach(x => w.push(`« ${x.nom} » est de série mais incompatible avec cette option, aussi de série.`));
+  }
+  if(!d.modeles.length) w.push("Cette option n'est disponible sur aucun modèle : les commerciaux ne la verront pas.");
+  d.modeles.forEach(mid => {
+    const m = getModele(mid); if(!m) return;
+    d.requiert.filter(r => !m.options.includes(r) && OPT_INDEX[r]).forEach(r =>
+      w.push(`Sur le modèle « ${m.nom} », « ${nm(r)} » (nécessaire) n'est pas disponible : cette option n'y sera jamais choisissable.`));
+  });
+  return w;
+}
+
+function updateOStatus(){
+  if(adm.view !== 'oedit' || !$('oNom')) return;
+  readODraft();
+  const d = adm.draft;
+  $('oCountR').textContent = d.requiert.length;
+  $('oCountI').textContent = d.incompatibles.length;
+  $('oCountM').textContent = d.modeles.length;
+  const cat = CATEGORIES_DEF[d.cat];
+  const groups = new Set();
+  (cat ? cat.options : []).forEach(o => { if(o.groupe && o.id !== d.id) groups.add(o.groupe); });
+  $('oGroups').innerHTML = [...groups].map(g => `<option value="${esc(g)}"></option>`).join('');
+  const w = adminOWarnings(d), box = $('oWarnings');
+  box.hidden = !w.length;
+  box.innerHTML = w.length ? `<strong>À vérifier</strong> (vous pouvez enregistrer malgré tout)<ul>${w.map(x => `<li>${esc(x)}</li>`).join('')}</ul>` : '';
+}
+
+function applyFilterIn(boxId, q){
+  q = q.trim().toLowerCase();
+  document.querySelectorAll('#' + boxId + ' .adm-cat').forEach(cat => {
+    let shown = 0;
+    cat.querySelectorAll('.adm-pick').forEach(row => {
+      const ok = !q || row.dataset.search.includes(q);
+      row.hidden = !ok; if(ok) shown++;
+    });
+    cat.hidden = shown === 0;
+  });
+}
+
+function setAllModels(on){
+  adm.draft.modeles = on ? catalogue.modeles.map(m => m.id) : [];
+  document.querySelectorAll('#pickM .adm-pick input[type=checkbox]').forEach(i => { i.checked = on; });
+  document.querySelectorAll('#pickM .adm-mprix').forEach(f => { f.disabled = !on; if(!on) f.value = ''; });
+  if(!on) adm.draft.prixModeles = {};
+  updateOStatus();
+}
+
+function onPickChange(row, checked){
+  const d = adm.draft, id = row.dataset.id, kind = row.dataset.kind;
+  const key = kind === 'r' ? 'requiert' : kind === 'i' ? 'incompatibles' : 'modeles';
+  const s = new Set(d[key]);
+  if(checked) s.add(id); else s.delete(id);
+  d[key] = kind === 'm' ? canonMod([...s]) : canonOpt([...s]);
+  if(kind === 'm'){
+    const f = row.querySelector('.adm-mprix');
+    if(f){ f.disabled = !checked; if(!checked){ f.value = ''; delete d.prixModeles[id]; } }
+  }
+  updateOStatus();
+}
+
+function adminOSave(){
+  readODraft();
+  const d = adm.draft, errs = adminOErrors(d);
+  document.querySelectorAll('#adminBody .champ.invalid').forEach(el => el.classList.remove('invalid'));
+  const box = $('oErrors');
+  if(errs.length){
+    errs.forEach(([id]) => { const el = $(id); if(el) el.classList.add('invalid'); });
+    box.hidden = false; box.innerHTML = errs.map(([, m]) => esc(m)).join('<br>');
+    $('adminOverlay').scrollTop = 0;
+    return;
+  }
+  box.hidden = true;
+  let cat;
+  if(d.cat === '__new__'){ cat = { id: newCatId(d.newCat), nom: d.newCat, options: [] }; catalogue.categories.push(cat); }
+  else cat = catalogue.categories.find(c => c.id === d.cat);
+  if(!cat) return;
+  let id = d.id;
+  if(!id){ do { id = newOptId(d.nom); } while(OPT_INDEX[id]); }
+  const valid = list => canonOpt(list.filter(x => x !== id));
+  const opt = { id, ref: d.ref, nom: d.nom, desc: d.desc, prix: round2(d.prix), groupe: d.groupe, defaut: d.defaut, photo: cleanPhoto(d.photo), video: cleanVideo(d.video),
+    requiert: valid(d.requiert), incompatibles: valid(d.incompatibles) };
+  const old = OPT_INDEX[id], oldCat = old && catOf(old);
+  if(oldCat === cat) cat.options[cat.options.indexOf(old)] = opt;
+  else { if(oldCat) oldCat.options = oldCat.options.filter(x => x !== old); cat.options.push(opt); }
+  // l'incompatibilité est déclarée uniquement ici (règle symétrique) : on retire les anciennes déclarations croisées
+  catalogue.categories.forEach(c => c.options.forEach(x => { if(x !== opt) x.incompatibles = (x.incompatibles || []).filter(i => i !== id); }));
+  const dispo = new Set(d.modeles);
+  catalogue.modeles.forEach(m => {
+    const has = m.options.includes(id);
+    if(dispo.has(m.id) && !has) m.options.push(id);
+    else if(!dispo.has(m.id) && has) m.options = m.options.filter(x => x !== id);
+    m.prixOptions = m.prixOptions || {};
+    const pv = d.prixModeles[m.id];
+    if(dispo.has(m.id) && typeof pv === 'number' && isFinite(pv) && pv >= 0 && pv !== round2(d.prix)) m.prixOptions[id] = round2(pv);
+    else delete m.prixOptions[id];
+  });
+  commitCatalogue();
+  showToast(adm.isNew ? 'Option créée' : 'Option enregistrée');
+  adm.tab = 'options';
+  renderAdminList();
+}
+
+// ---------- Export / import / réinitialisation ----------
+function adminExport(){
+  const blob = new Blob([JSON.stringify(catalogue, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'gamme-maupu-' + new Date().toISOString().slice(0, 10) + '.json';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1500);
+}
+
+function adminImportFile(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onerror = () => showToast('Lecture du fichier impossible.', true);
+  reader.onload = async () => {
+    let raw;
+    try{ raw = JSON.parse(String(reader.result)); }catch(e){ showToast("Fichier invalide : ce n'est pas un JSON lisible. Gamme inchangée.", true); return; }
+    const c = sanitizeCatalogue(raw);
+    if(!c){ showToast('Fichier invalide : aucune liste de modèles trouvée. Gamme inchangée.', true); return; }
+    const brut = raw.modeles.reduce((n, m) => n + (m && Array.isArray(m.options) ? m.options.length : 0), 0);
+    const garde = c.modeles.reduce((n, m) => n + m.options.length, 0);
+    const retirees = brut - garde;
+    const msg = `Remplacer la gamme actuelle par celle du fichier (${c.modeles.length} modèle${c.modeles.length > 1 ? 's' : ''}) ?` + (retirees > 0 ? ` ${retirees} option(s) inconnue(s) seront ignorée(s).` : '');
+    if(!await askConfirm(msg, 'Remplacer', 'Importer une gamme')) return;
+    catalogue = c; persist(); renderAdminList();
+    showToast('Gamme importée' + (retirees > 0 ? ` (${retirees} option(s) inconnue(s) ignorée(s))` : ''));
+  };
+  reader.readAsText(file);
+}
+
+async function adminReset(){
+  if(!await askConfirm("Remplacer toute la gamme par la gamme d'exemple d'origine ? Vos modèles actuels seront perdus (pensez à exporter avant).", 'Revenir à la gamme d\'exemple', 'Réinitialiser')) return;
+  catalogue = sanitizeCatalogue(clone(DEFAULT_CATALOGUE)); persist(); renderAdminList();
+  showToast("Gamme d'exemple restaurée");
+}
+
+async function adminSyncPull(){
+  if(sync.dirty && !await askConfirm('Des modifications de cet appareil ne sont pas encore envoyées. Les remplacer par la gamme en ligne ?', 'Recharger', 'Recharger depuis le serveur')) return;
+  sync.dirty = false; syncMeta();
+  await syncPull(true);
+  showToast(sync.state === 'ok' ? 'Gamme rechargée depuis le serveur' : 'Serveur injoignable', sync.state !== 'ok');
+}
+async function adminSyncPush(){
+  if(!await askConfirm("Publier la gamme de cet appareil en ligne ? Elle remplacera la gamme actuellement partagée entre tous les commerciaux.", 'Publier', 'Publier la gamme')) return;
+  // on repart de la version en ligne pour ne pas être refusé par le contrôle de version
+  let v = 0;
+  try{ const r = await restCall('configurateur_catalogue?id=eq.1&select=version'); const rows = r.ok ? await r.json() : []; v = rows[0] ? rows[0].version : 0; }
+  catch(e){ showToast('Serveur injoignable', true); return; }
+  await syncPush(v);
+  showToast(sync.state === 'ok' ? 'Gamme publiée en ligne' : 'Publication impossible : serveur injoignable', sync.state !== 'ok');
+}
+
+async function adminMigratePhotos(){
+  const locals = Object.keys(OPT_INDEX).filter(k => (OPT_INDEX[k].photo || '').startsWith('data:'));
+  if(!locals.length) return;
+  if(!await askConfirm(`Envoyer ${locals.length} photo(s) stockée(s) sur cet appareil vers Supabase ?`, 'Envoyer', 'Photos vers Supabase')) return;
+  let ok = 0, ko = 0;
+  for(const k of locals){
+    try{
+      const blob = await (await fetch(OPT_INDEX[k].photo)).blob();
+      OPT_INDEX[k].photo = await supaUpload(blob); ok++;
+    }catch(e){ ko++; }
+  }
+  commitCatalogue(); renderAdminList();
+  showToast(ko ? `${ok} photo(s) envoyée(s), ${ko} en échec (réessayez).` : `${ok} photo(s) envoyée(s) vers Supabase`, !!ko);
+}
+
+async function adminGenHash(){
+  const code = $('newCode').value;
+  if(code.length < 6){ showToast('Choisissez un code d\'au moins 6 caractères.', true); return; }
+  try{
+    const h = await adminHash(code);
+    const out = $('hashOut'); out.hidden = false; out.textContent = "const ADMIN_CODE_HASH = '" + h + "';";
+  }catch(e){ showToast('Navigateur non compatible (contexte non sécurisé).', true); }
+}
+
+// ---------- Délégation d'événements du menu ----------
+$('adminBody').addEventListener('click', e => {
+  const t = e.target.closest('[data-act]');
+  if(!t || t.disabled) return;
+  const id = t.dataset.id;
+  switch(t.dataset.act){
+    case 'tab': adm.tab = t.dataset.tab === 'options' ? 'options' : 'models'; renderAdminList(); break;
+    case 'onew': adminONew(); break;
+    case 'oedit': adminOEdit(id); break;
+    case 'odup': adminODup(id); break;
+    case 'odel': adminODelete(id); break;
+    case 'oup': adminOMove(id, -1); break;
+    case 'odown': adminOMove(id, 1); break;
+    case 'osave': adminOSave(); break;
+    case 'migphotos': adminMigratePhotos(); break;
+    case 'syncpull': adminSyncPull(); break;
+    case 'syncpush': adminSyncPush(); break;
+    case 'ophoto': $('oPhotoFile').click(); break;
+    case 'ophotodel': adm.draft.photo = ''; renderOPhoto(); break;
+    case 'ocancel': adminCancel(); break;
+    case 'mall': setAllModels(true); break;
+    case 'mnone': setAllModels(false); break;
+    case 'catnew': adminCatNew(); break;
+    case 'catren': adminCatRename(t.dataset.cat); break;
+    case 'catup': adminCatMove(t.dataset.cat, -1); break;
+    case 'catdown': adminCatMove(t.dataset.cat, 1); break;
+    case 'catdel': adminCatDelete(t.dataset.cat); break;
+    case 'new': adminNew(); break;
+    case 'edit': adminEdit(id); break;
+    case 'dup': adminDup(id); break;
+    case 'toggle': adminToggle(id); break;
+    case 'delete': adminDelete(id); break;
+    case 'up': adminMoveModel(id, -1); break;
+    case 'down': adminMoveModel(id, 1); break;
+    case 'famup': adminMoveFamille(Number(t.dataset.i), -1); break;
+    case 'famdown': adminMoveFamille(Number(t.dataset.i), 1); break;
+    case 'save': adminSave(); break;
+    case 'cancel': adminCancel(); break;
+    case 'catall': setCategory(t.dataset.cat, true); break;
+    case 'catnone': setCategory(t.dataset.cat, false); break;
+    case 'allopts': setAllOptions(true); break;
+    case 'noneopts': setAllOptions(false); break;
+    case 'export': adminExport(); break;
+    case 'import': $('importFile').click(); break;
+    case 'reset': adminReset(); break;
+    case 'hash': adminGenHash(); break;
+  }
+});
+
+$('adminBody').addEventListener('change', e => {
+  const t = e.target;
+  if(t.id === 'oPhotoFile'){ adminPhotoPicked(t.files[0]); t.value = ''; return; }
+  if(t.id === 'importFile'){ adminImportFile(t.files[0]); t.value = ''; return; }
+  if(t.matches && t.matches('.adm-pick input[type=checkbox]')){ onPickChange(t.closest('.adm-pick'), t.checked); return; }
+  if(t.id === 'oCat'){ $('oNewCatWrap').hidden = t.value !== '__new__'; if(t.value === '__new__') $('oNewCat').focus(); updateOStatus(); return; }
+  if(t.id === 'oDefaut'){ updateOStatus(); return; }
+  if(t.matches && t.matches('.adm-opt input')){
+    const id = t.closest('.adm-opt').dataset.id;
+    if(t.checked) adm.sel.add(id); else adm.sel.delete(id);
+    updateEditorStatus();
+    return;
+  }
+  if(t.id === 'fFamille'){
+    $('fNewFamWrap').hidden = t.value !== '__new__';
+    if(t.value === '__new__') $('fNewFam').focus();
+    updateEditorStatus();
+  }
+});
+
+$('adminBody').addEventListener('input', e => {
+  const id = e.target.id;
+  if(e.target.dataset && e.target.dataset.mprix){
+    const v = e.target.value.trim(), mid = e.target.dataset.mprix, n = Number(v);
+    if(v === '' ) delete adm.draft.prixModeles[mid]; else adm.draft.prixModeles[mid] = isFinite(n) ? n : NaN;
+    updateOStatus(); return;
+  }
+  if(e.target.dataset && e.target.dataset.filter) applyFilterIn(e.target.dataset.filter, e.target.value);
+  else if(['oNom', 'oRef', 'oDesc', 'oPrix', 'oGroupe', 'oNewCat', 'oVideo'].includes(id)) updateOStatus();
+  else if(id === 'fFilter') applyFilter();
+  else if(['fNom', 'fRef', 'fNewFam', 'fDesc', 'fPrix'].includes(id)) updateEditorStatus();
+});
+
+document.addEventListener('keydown', e => {
+  if(e.key === 'Escape' && !$('confirmModal').hidden) $('confirmCancel').click();
+});
+
+// init
+goToStep(1);
+
+// Application installable + hors ligne (nécessite https ou localhost)
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); });
+}
+</script>
+</body>
+</html>
